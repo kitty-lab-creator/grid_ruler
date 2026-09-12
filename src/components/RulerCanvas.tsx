@@ -57,34 +57,34 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const subDivisions = unit === 'cm' ? 10 : 8; // 1mm for cm, 1/8" for inch
     const pixelsPerSub = pixelsPerUnit / subDivisions;
 
-    // 1. Draw minor grid lines
+    // 1. Draw minor grid lines (Confined to quadrant area to keep number gutters completely clean)
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = colorScheme.minorLineColor;
     ctx.beginPath();
     // Vertical minor
     for (let x = originX + pixelsPerSub; x < width; x += pixelsPerSub) {
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.lineTo(x, originY);
     }
     // Horizontal minor
     for (let y = originY - pixelsPerSub; y > 0; y -= pixelsPerSub) {
-      ctx.moveTo(0, y);
+      ctx.moveTo(originX, y);
       ctx.lineTo(width, y);
     }
     ctx.stroke();
 
-    // 2. Draw major grid lines (per 1 unit)
+    // 2. Draw major grid lines (per 1 unit, confined to quadrant area)
     ctx.lineWidth = 1.0;
     ctx.strokeStyle = colorScheme.majorLineColor;
     ctx.beginPath();
     // Vertical major
     for (let x = originX + pixelsPerUnit; x < width; x += pixelsPerUnit) {
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.lineTo(x, originY);
     }
     // Horizontal major
     for (let y = originY - pixelsPerUnit; y > 0; y -= pixelsPerUnit) {
-      ctx.moveTo(0, y);
+      ctx.moveTo(originX, y);
       ctx.lineTo(width, y);
     }
     ctx.stroke();
@@ -101,9 +101,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.lineTo(originX, height);
     ctx.stroke();
 
-    // 4. Tick marks and numbering
+    // 4. Tick marks and numbering (Bold and larger for crystal-clear vision)
     ctx.fillStyle = colorScheme.textColor;
-    ctx.font = '500 11px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
 
     // --- X Axis Ticks & Labels ---
     ctx.textAlign = 'center';
@@ -111,7 +111,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     for (let x = originX; x < width; x += pixelsPerUnit) {
       // Major tick mark
       ctx.strokeStyle = colorScheme.axisLineColor;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(x, originY);
       ctx.lineTo(x, originY + 8);
@@ -119,13 +119,13 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
       // Number
       if (countX > 0) {
-        ctx.fillText(String(countX), x, originY + 22);
+        ctx.fillText(String(countX), x, originY + 23);
       }
 
       // Halfway tick (0.5 cm or 0.5 inch)
       const halfX = x + pixelsPerUnit / 2;
       if (halfX < width) {
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(halfX, originY);
         ctx.lineTo(halfX, originY + 5);
@@ -141,7 +141,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     for (let y = originY; y > 0; y -= pixelsPerUnit) {
       // Major tick mark
       ctx.strokeStyle = colorScheme.axisLineColor;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(originX, y);
       ctx.lineTo(originX - 8, y);
@@ -149,13 +149,13 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
       // Number
       if (countY > 0) {
-        ctx.fillText(String(countY), originX - 12, y + 4);
+        ctx.fillText(String(countY), originX - 11, y + 4.5);
       }
 
       // Halfway tick
       const halfY = y - pixelsPerUnit / 2;
       if (halfY > 0) {
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(originX, halfY);
         ctx.lineTo(originX - 5, halfY);
@@ -167,9 +167,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
     // Unit label at origin corner
     ctx.textAlign = 'center';
-    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = colorScheme.textColor;
-    ctx.fillText(unit.toUpperCase(), originX - 18, originY + 20);
+    ctx.fillText(unit.toUpperCase(), originX - 18, originY + 21);
 
     // 5. Red Photoshop-style Reference Lines (when active)
     if (showGuides) {

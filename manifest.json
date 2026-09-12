@@ -2,7 +2,7 @@
   "id": "/",
   "name": "方格紙量尺",
   "short_name": "方格量尺",
-  "description": "專為手工藝與微型測量打造的離線方格紙量尺，支援信用卡實物高度校準與自訂參考線",
+  "description": "專為隨身物件測量設計。無需連網，支援全離線運作。",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

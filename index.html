@@ -4,8 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>方格紙量尺</title>
-  <meta name="description" content="離線方格紙量尺，支援實體卡片校準、自訂參考線與單位切換。">
-  <link rel="icon" type="image/png" href="./icon.png">
+  <meta name="description" content="專為隨身物件測量設計。無需連網，支援全離線運作。">
+  <meta property="og:title" content="方格紙量尺">
+  <meta property="og:description" content="專為隨身物件測量設計。無需連網，支援全離線運作。">
+  <meta property="og:image" content="./icon-512.png">
+
+  <!-- Apple iOS Safari Home Screen Icon (Prevents '方' fallback) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="方格紙量尺">
+
+  <!-- Favicon & PWA Manifest -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0f172a">
   <style>
     * {
       box-sizing: border-box;
@@ -419,7 +434,7 @@
       </div>
 
       <div style="font-size: 12px; color: #475569; line-height: 1.5;">
-        <p>專為<strong style="color: #0f172a;">手工藝 (Crafters)</strong>、模型製作與微型物件測量設計。無需連網，支援全離線運作。</p>
+        <p>專為<strong style="color: #0f172a;">隨身物件測量</strong>設計。無需連網，支援全離線運作。</p>
       </div>
 
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; font-size: 11px; color: #334155; line-height: 1.6;">
@@ -543,27 +558,27 @@
       const subDivisions = unit === 'cm' ? 10 : 8;
       const pixelsPerSub = pixelsPerUnit / subDivisions;
 
-      // 1. Minor Lines
+      // 1. Minor Lines (Confined to quadrant area to keep number gutters completely clean)
       ctx.lineWidth = 0.5;
       ctx.strokeStyle = theme.minorLine;
       ctx.beginPath();
       for (let x = originX + pixelsPerSub; x < width; x += pixelsPerSub) {
-        ctx.moveTo(x, 0); ctx.lineTo(x, height);
+        ctx.moveTo(x, 0); ctx.lineTo(x, originY);
       }
       for (let y = originY - pixelsPerSub; y > 0; y -= pixelsPerSub) {
-        ctx.moveTo(0, y); ctx.lineTo(width, y);
+        ctx.moveTo(originX, y); ctx.lineTo(width, y);
       }
       ctx.stroke();
 
-      // 2. Major Lines
+      // 2. Major Lines (Confined to quadrant area to keep number gutters completely clean)
       ctx.lineWidth = 1.0;
       ctx.strokeStyle = theme.majorLine;
       ctx.beginPath();
       for (let x = originX + pixelsPerUnit; x < width; x += pixelsPerUnit) {
-        ctx.moveTo(x, 0); ctx.lineTo(x, height);
+        ctx.moveTo(x, 0); ctx.lineTo(x, originY);
       }
       for (let y = originY - pixelsPerUnit; y > 0; y -= pixelsPerUnit) {
-        ctx.moveTo(0, y); ctx.lineTo(width, y);
+        ctx.moveTo(originX, y); ctx.lineTo(width, y);
       }
       ctx.stroke();
 
@@ -575,21 +590,21 @@
       ctx.moveTo(originX, 0); ctx.lineTo(originX, height);
       ctx.stroke();
 
-      // 4. Numbers and Ticks
+      // 4. Numbers and Ticks (Bold and larger for crystal-clear vision)
       ctx.fillStyle = theme.textColor;
-      ctx.font = '500 11px system-ui, sans-serif';
+      ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
 
       // X Ticks
       ctx.textAlign = 'center';
       let cX = 0;
       for (let x = originX; x < width; x += pixelsPerUnit) {
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.8;
         ctx.beginPath(); ctx.moveTo(x, originY); ctx.lineTo(x, originY + 8); ctx.stroke();
-        if (cX > 0) ctx.fillText(String(cX), x, originY + 22);
+        if (cX > 0) ctx.fillText(String(cX), x, originY + 23);
 
         const halfX = x + pixelsPerUnit / 2;
         if (halfX < width) {
-          ctx.lineWidth = 1;
+          ctx.lineWidth = 1.2;
           ctx.beginPath(); ctx.moveTo(halfX, originY); ctx.lineTo(halfX, originY + 5); ctx.stroke();
         }
         cX++;
@@ -599,13 +614,13 @@
       ctx.textAlign = 'right';
       let cY = 0;
       for (let y = originY; y > 0; y -= pixelsPerUnit) {
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.8;
         ctx.beginPath(); ctx.moveTo(originX, y); ctx.lineTo(originX - 8, y); ctx.stroke();
-        if (cY > 0) ctx.fillText(String(cY), originX - 12, y + 4);
+        if (cY > 0) ctx.fillText(String(cY), originX - 11, y + 4.5);
 
         const halfY = y - pixelsPerUnit / 2;
         if (halfY > 0) {
-          ctx.lineWidth = 1;
+          ctx.lineWidth = 1.2;
           ctx.beginPath(); ctx.moveTo(originX, halfY); ctx.lineTo(originX - 5, halfY); ctx.stroke();
         }
         cY++;
@@ -613,8 +628,8 @@
 
       // Corner unit label
       ctx.textAlign = 'center';
-      ctx.font = 'bold 11px system-ui, sans-serif';
-      ctx.fillText(unit.toUpperCase(), originX - 18, originY + 20);
+      ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+      ctx.fillText(unit.toUpperCase(), originX - 18, originY + 21);
 
       // 5. Solid Red Crosshair Guides
       if (showGuides) {

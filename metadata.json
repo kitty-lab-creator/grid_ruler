@@ -1,6 +1,6 @@
 {
   "name": "方格紙量尺",
-  "description": "離線方格紙量尺，支援實體卡片校準、自訂參考線與單位切換。",
+  "description": "專為隨身物件測量設計。無需連網，支援全離線運作。",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

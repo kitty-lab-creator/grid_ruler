@@ -39,7 +39,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
         {/* Introduction */}
         <div className="text-xs text-slate-600 leading-relaxed space-y-2">
           <p>
-            專為<strong className="text-slate-800 font-semibold">手工藝愛好者 (Crafters)</strong>、模型製作與微型物件測量設計。無需依賴外部資料庫或網路，支援全離線獨立運行。
+            專為<strong className="text-slate-800 font-semibold">隨身物件測量</strong>設計。無需連網，支援全離線運作。
           </p>
           <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1.5 text-[11px]">
             <div className="flex items-center gap-1.5 font-semibold text-slate-700">
