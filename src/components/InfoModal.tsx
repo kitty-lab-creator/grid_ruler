@@ -87,7 +87,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
             className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-300 transition-colors"
           >
             <Mail className="w-4 h-4 text-slate-600" />
-            <span>回報問題 / 聯絡作者 (kitty.waiying@gmail.com)</span>
+            <span>回報問題 / 聯絡作者</span>
           </a>
 
           {/* Buy Me a Coffee button */}
@@ -98,7 +98,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
             className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-[#000000] font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
           >
             <Coffee className="w-4 h-4 fill-black" />
-            <span>請作者喝杯咖啡 (Buy Me a Coffee: kittyng89) ☕</span>
+            <span>請作者喝杯咖啡</span>
           </a>
         </div>
 
