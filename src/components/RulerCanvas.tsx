@@ -21,8 +21,25 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   onGuideChange,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const safeAreaRef = useRef<HTMLDivElement>(null);
+  const safeAreaBottomRef = useRef<number>(0);
   const draggingRef = useRef<'x' | 'y' | 'both' | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  // Update safe area on resize
+  useEffect(() => {
+    const updateSafeArea = () => {
+      if (safeAreaRef.current) {
+        safeAreaBottomRef.current = parseFloat(getComputedStyle(safeAreaRef.current).paddingBottom) || 0;
+        draw();
+      }
+    };
+    
+    updateSafeArea();
+    window.addEventListener('resize', updateSafeArea);
+    return () => window.removeEventListener('resize', updateSafeArea);
+  }, []);
 
   // Measure and render
   const draw = useCallback(() => {
@@ -50,8 +67,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.fillRect(0, 0, width, height);
 
     // Origin coordinates: clean edge design
-    const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
-    const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
+    const safeAreaBottom = safeAreaBottomRef.current;
     const originX = 26;
     const originY = height - 26 - safeAreaBottom;
 
@@ -297,8 +313,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
-    const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
+    const safeAreaBottom = safeAreaBottomRef.current;
     const originX = 26;
     const originY = rect.height - 26 - safeAreaBottom;
 
@@ -331,8 +346,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
-    const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
+    const safeAreaBottom = safeAreaBottomRef.current;
     const originX = 26;
     const originY = rect.height - 26 - safeAreaBottom;
 
@@ -374,12 +388,19 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   }, [handleDragMove, handleDragEnd]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      id="ruler-canvas"
-      className="absolute inset-0 block w-full h-full touch-none select-none cursor-crosshair"
-      onTouchStart={handleDragStart}
-      onMouseDown={handleDragStart}
-    />
+    <>
+      <div 
+        ref={safeAreaRef}
+        className="absolute invisible pointer-events-none"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      />
+      <canvas
+        ref={canvasRef}
+        id="ruler-canvas"
+        className="absolute inset-0 block w-full h-full touch-none select-none cursor-crosshair"
+        onTouchStart={handleDragStart}
+        onMouseDown={handleDragStart}
+      />
+    </>
   );
 };
