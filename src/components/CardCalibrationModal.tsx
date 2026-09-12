@@ -1,6 +1,6 @@
 import React from 'react';
 import { CARD_STANDARD_HEIGHT_CM, CARD_STANDARD_WIDTH_CM } from '../types';
-import { Check, ArrowDown, ArrowUp, RotateCcw } from 'lucide-react';
+import { Check, ArrowDown, ArrowUp, RotateCcw, X } from 'lucide-react';
 
 interface CardCalibrationModalProps {
   ppi: number;
@@ -20,7 +20,6 @@ export const CardCalibrationModal: React.FC<CardCalibrationModalProps> = ({
   // Height in pixels on current screen scale
   const pixelsPerCm = ppi / 2.54;
   const cardHeightPx = Math.round(pixelsPerCm * CARD_STANDARD_HEIGHT_CM);
-  // Full standard width
   const cardWidthPx = Math.round(pixelsPerCm * CARD_STANDARD_WIDTH_CM);
 
   const adjustPpi = (delta: number) => {
@@ -38,114 +37,101 @@ export const CardCalibrationModal: React.FC<CardCalibrationModalProps> = ({
     >
       <div
         id="card-calibration-modal"
-        className="w-full max-w-[340px] my-auto bg-white rounded-2xl p-4 sm:p-5 shadow-2xl text-slate-900 flex flex-col gap-3 max-h-[94dvh] overflow-y-auto border border-slate-200"
+        className="relative w-full max-w-[340px] my-auto bg-white rounded-2xl p-4 sm:p-5 shadow-2xl text-slate-900 flex flex-col gap-2.5 max-h-[90dvh] overflow-y-auto border border-slate-200"
         style={{ touchAction: 'pan-y' }}
       >
+        {/* Top-Right Circular Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors z-10"
+          title="跳過並關閉"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
         {/* Header */}
-        <div className="text-center">
+        <div className="text-center pr-6">
           <div className="inline-flex items-center justify-center gap-1.5 text-base sm:text-lg font-bold text-slate-900 mb-0.5">
             <span>💳</span>
             <span>信用卡高度校準</span>
           </div>
-          <p className="text-[12px] sm:text-[13px] text-slate-600 leading-snug">
-            拿身邊任何一張<span className="font-semibold text-blue-600">信用卡、八達通、健保卡或悠遊卡</span>貼在螢幕上，調整藍色卡片至高度完全吻合：
+          <p className="text-[12px] text-slate-600 leading-snug">
+            拿身邊任何一張<span className="font-semibold text-blue-600">信用卡、八達通或健保卡</span>貼在螢幕上，微調至高度完全吻合：
           </p>
         </div>
 
-        {/* Virtual Card Preview Container */}
+        {/* Virtual Card Preview Container with Fade-out */}
         <div
           id="virtual-card-container"
-          className="w-full bg-slate-100 rounded-xl p-2.5 flex items-center justify-center overflow-hidden border border-slate-200"
+          className="w-full bg-slate-50 rounded-xl p-2.5 flex items-center justify-center overflow-hidden border border-slate-200 min-h-[135px]"
         >
-          {/* Virtual Card Representation */}
+          {/* Virtual Card Representation with Left Gradient Fade-out */}
           <div
             id="virtual-card"
             style={{
               height: `${cardHeightPx}px`,
               width: '100%',
               maxWidth: `${cardWidthPx}px`,
+              background: 'linear-gradient(90deg, rgba(248, 250, 252, 0) 0%, rgba(30, 41, 59, 0.28) 25%, rgba(15, 23, 42, 0.92) 65%, #090d16 100%)',
+              borderTop: '1.5px solid rgba(255, 255, 255, 0.25)',
+              borderBottom: '1.5px solid rgba(255, 255, 255, 0.2)',
+              borderRight: '2px solid rgba(255, 255, 255, 0.35)',
+              borderLeft: 'none',
+              borderRadius: '0 10px 10px 0',
             }}
-            className="relative bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg border-2 border-white shadow-md flex items-center justify-between px-3 text-white select-none transition-[height] duration-75"
+            className="relative shadow-md flex items-center justify-between text-white select-none transition-[height] duration-75 overflow-hidden"
           >
-            {/* Left side chip graphic and label */}
-            <div className="flex flex-col justify-between h-full py-2 pointer-events-none">
-              <div className="w-7 h-5 rounded bg-amber-300/80 border border-amber-400/90 shadow-inner flex items-center justify-center">
-                <div className="w-4 h-3 border-t border-b border-amber-600/50" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                  標準卡片
-                </p>
-                <p className="text-[9px] text-blue-200">
-                  實物對齊邊界
-                </p>
-              </div>
+            {/* Subtle watermark markings on the left */}
+            <div className="flex flex-col justify-between h-3/4 pl-5 opacity-35 pointer-events-none">
+              <span className="text-[11px] font-semibold tracking-wider text-slate-200">Bank Card</span>
+              <span className="font-mono text-[11px] tracking-widest text-slate-200">•••• •••• •••• 3456</span>
             </div>
 
-            {/* Right side clean height indicator */}
-            <div className="relative flex flex-col items-center justify-between h-full py-1">
-              {/* Top arrow */}
-              <div className="flex items-center gap-1">
-                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-rose-400" />
+            {/* Right edge sharp red alignment arrow and badge matching user draft */}
+            <div className="absolute right-2 top-0 bottom-0 w-[145px] flex flex-col items-end justify-between pointer-events-none">
+              {/* Top Cap & Downward Arrowhead */}
+              <svg width="24" height="14" viewBox="0 0 24 14" className="mr-[1px]">
+                <line x1="2" y1="1.5" x2="22" y2="1.5" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
+                <path d="M5 2 L12 10 L19 2" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+
+              {/* Vertical Connecting Line & Center Red Badge */}
+              <div className="flex-1 w-6 relative flex items-center justify-center">
+                <div className="absolute top-0 bottom-0 w-[2.5px] bg-red-500"></div>
+                <div className="absolute right-7 bg-red-600 text-white font-bold text-[11px] px-2 py-0.5 rounded shadow whitespace-nowrap border border-white/20">
+                  對齊真實卡片高度
+                </div>
               </div>
 
-              {/* Center height badge */}
-              <div className="bg-rose-500 text-white font-bold text-[10px] px-1.5 py-0.5 rounded shadow whitespace-nowrap">
-                高 5.40 cm
-              </div>
-
-              {/* Bottom arrow */}
-              <div className="flex items-center gap-1">
-                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-rose-400" />
-              </div>
-
-              {/* Vertical red guide line */}
-              <div className="absolute top-2 bottom-2 right-1.5 w-[2px] bg-rose-400 -z-0 opacity-80" />
+              {/* Bottom Cap & Upward Arrowhead */}
+              <svg width="24" height="14" viewBox="0 0 24 14" className="mr-[1px]">
+                <path d="M5 12 L12 4 L19 12" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="2" y1="12.5" x2="22" y2="12.5" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
+              </svg>
             </div>
           </div>
         </div>
 
-        {/* Stepper Tuning Controls */}
-        <div className="flex flex-col gap-1.5">
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => adjustPpi(-1.5)}
-              className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-xl font-bold text-sm text-blue-700 border border-slate-300 flex items-center justify-center gap-1 active:scale-95 transition-all"
-            >
-              <ArrowDown className="w-4 h-4" />
-              <span>縮小高度</span>
-            </button>
-            <button
-              onClick={() => adjustPpi(1.5)}
-              className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-xl font-bold text-sm text-blue-700 border border-slate-300 flex items-center justify-center gap-1 active:scale-95 transition-all"
-            >
-              <ArrowUp className="w-4 h-4" />
-              <span>放大高度</span>
-            </button>
-          </div>
-
-          {/* Micro fine-tuning */}
-          <div className="flex items-center justify-between px-1 text-xs text-slate-500">
-            <button
-              onClick={() => adjustPpi(-0.2)}
-              className="px-2 py-1 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 text-slate-700 font-medium active:scale-95"
-            >
-              微調 -0.2
-            </button>
-            <span className="font-mono text-[11px] text-slate-400">
-              PPI: {ppi.toFixed(1)}
-            </span>
-            <button
-              onClick={() => adjustPpi(0.2)}
-              className="px-2 py-1 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 text-slate-700 font-medium active:scale-95"
-            >
-              微調 +0.2
-            </button>
-          </div>
+        {/* Stepper Tuning Controls (No confusing micro-finetune row) */}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => adjustPpi(-1.5)}
+            className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-xl font-bold text-sm text-slate-800 border border-slate-300 flex items-center justify-center gap-1 active:scale-95 transition-all"
+          >
+            <ArrowDown className="w-4 h-4 text-blue-600" />
+            <span>縮小高度</span>
+          </button>
+          <button
+            onClick={() => adjustPpi(1.5)}
+            className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-xl font-bold text-sm text-slate-800 border border-slate-300 flex items-center justify-center gap-1 active:scale-95 transition-all"
+          >
+            <ArrowUp className="w-4 h-4 text-blue-600" />
+            <span>放大高度</span>
+          </button>
         </div>
 
-        {/* Modal Action Buttons (Always visible and scrollable) */}
-        <div className="grid grid-cols-2 gap-2.5 pt-1 border-t border-slate-100">
+        {/* Modal Action Buttons */}
+        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
           <button
             onClick={onClose}
             className="py-2.5 px-4 rounded-xl font-semibold text-sm bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 transition-colors"
@@ -157,18 +143,18 @@ export const CardCalibrationModal: React.FC<CardCalibrationModalProps> = ({
             className="py-2.5 px-4 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-md flex items-center justify-center gap-1.5 transition-colors"
           >
             <Check className="w-4 h-4 stroke-[2.5]" />
-            <span>完成校準</span>
+            <span>完成校準 ✓</span>
           </button>
         </div>
 
-        {/* Reset hint */}
-        <div className="text-center">
+        {/* Reset Option */}
+        <div className="text-center pt-0.5">
           <button
             onClick={() => onPpiChange(defaultPpi)}
-            className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-600"
+            className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-slate-600 underline"
           >
             <RotateCcw className="w-3 h-3" />
-            <span>還原系統預測值 ({defaultPpi.toFixed(1)})</span>
+            <span>還原系統預測比例 ({defaultPpi.toFixed(1)})</span>
           </button>
         </div>
       </div>

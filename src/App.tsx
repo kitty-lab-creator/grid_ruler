@@ -8,8 +8,14 @@ import { InfoModal } from './components/InfoModal';
 
 function estimateInitialPpi(): number {
   if (typeof window === 'undefined') return 160;
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  return isMobile ? 160 : 96;
+  const ua = navigator.userAgent;
+  const isIPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIPad) return 132;
+  const isIPhone = /iPhone|iPod/i.test(ua);
+  if (isIPhone) return 163;
+  const isAndroid = /Android/i.test(ua);
+  if (isAndroid) return 160;
+  return 96;
 }
 
 export default function App() {
@@ -42,13 +48,7 @@ export default function App() {
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
-  // If first visit ever, prompt card sync gently
-  useEffect(() => {
-    const hasCalibrated = localStorage.getItem('calibrated_ppi');
-    if (!hasCalibrated) {
-      setIsCardSyncOpen(true);
-    }
-  }, []);
+  // Direct entry without automatic card sync modal popup
 
   // Sync to localStorage
   const handlePpiChange = useCallback((newPpi: number) => {
