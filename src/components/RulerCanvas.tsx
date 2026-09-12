@@ -31,8 +31,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
     const dpr = window.devicePixelRatio || 1;
 
     if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
@@ -48,11 +49,11 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.fillStyle = colorScheme.canvasBg;
     ctx.fillRect(0, 0, width, height);
 
-    // Origin coordinates: left-bottom margin (accounting for iOS safe area bottom)
+    // Origin coordinates: clean edge design
     const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
     const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
-    const originX = 40;
-    const originY = height - 40 - safeAreaBottom;
+    const originX = 26;
+    const originY = height - 26 - safeAreaBottom;
 
     // Scale calculation
     const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
@@ -116,12 +117,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(x, originY);
-      ctx.lineTo(x, originY + 8);
+      ctx.lineTo(x, originY + 6);
       ctx.stroke();
 
       // Number
       if (countX > 0) {
-        ctx.fillText(String(countX), x, originY + 23);
+        ctx.fillText(String(countX), x, originY + 19);
       }
 
       // Halfway tick (0.5 cm or 0.5 inch)
@@ -130,7 +131,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(halfX, originY);
-        ctx.lineTo(halfX, originY + 5);
+        ctx.lineTo(halfX, originY + 4);
         ctx.stroke();
       }
 
@@ -146,12 +147,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(originX, y);
-      ctx.lineTo(originX - 8, y);
+      ctx.lineTo(originX - 6, y);
       ctx.stroke();
 
       // Number
       if (countY > 0) {
-        ctx.fillText(String(countY), originX - 11, y + 4.5);
+        ctx.fillText(String(countY), originX - 8, y + 4.5);
       }
 
       // Halfway tick
@@ -160,7 +161,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(originX, halfY);
-        ctx.lineTo(originX - 5, halfY);
+        ctx.lineTo(originX - 4, halfY);
         ctx.stroke();
       }
 
@@ -171,7 +172,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.textAlign = 'center';
     ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = colorScheme.textColor;
-    ctx.fillText(unit.toUpperCase(), originX - 18, originY + 21);
+    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 18);
 
     // 5. Red Photoshop-style Reference Lines (when active)
     if (showGuides) {
@@ -293,10 +294,13 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   const handleDragStart = (e: React.TouchEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
     if (!showGuides) return;
     const pos = getCanvasPos(e);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
     const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
     const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
-    const originX = 40;
-    const originY = window.innerHeight - 40 - safeAreaBottom;
+    const originX = 26;
+    const originY = rect.height - 26 - safeAreaBottom;
 
     const currentX = originX + guideX;
     const currentY = originY - guideY;
@@ -324,10 +328,13 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     }
 
     const pos = getCanvasPos(e);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
     const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
     const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
-    const originX = 40;
-    const originY = window.innerHeight - 40 - safeAreaBottom;
+    const originX = 26;
+    const originY = rect.height - 26 - safeAreaBottom;
 
     let newX = guideX;
     let newY = guideY;

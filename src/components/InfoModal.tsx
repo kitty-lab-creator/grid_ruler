@@ -92,7 +92,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
 
           {/* Buy Me a Coffee button */}
           <a
-            href="https://buymeacoffee.com/kittyng89"
+            href="https://buymeacoffee.com/kittywaiyiw"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-[#000000] font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
