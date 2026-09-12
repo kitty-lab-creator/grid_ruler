@@ -86,7 +86,7 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
         id="btn-bg-color"
         onClick={onCycleBgColor}
         className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all group"
-        title="切換背景顏色 (黃、灰、黑、白)"
+        title="切換背景顏色 (白、Tajima 捲尺黃、50% 灰、黑)"
         aria-label="切換背景顏色"
       >
         {/* Color Wheel SVG icon */}

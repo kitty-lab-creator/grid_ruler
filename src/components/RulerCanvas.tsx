@@ -177,10 +177,10 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       const lineY = originY - guideY;
 
       ctx.save();
-      // Line styling
+      // Line styling - solid red reference line per user request
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = colorScheme.guideLineColor;
-      ctx.setLineDash([6, 3]);
+      ctx.setLineDash([]);
 
       // Vertical guide line
       ctx.beginPath();

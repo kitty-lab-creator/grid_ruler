@@ -44,19 +44,19 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
           <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1.5 text-[11px]">
             <div className="flex items-center gap-1.5 font-semibold text-slate-700">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>卡片實物校準：以身邊的信用卡/八達通/健保卡 1:1 對齊</span>
+              <span>實體卡片校準：以身邊的信用卡/八達通/健保卡 1:1 高度吻合</span>
             </div>
             <div className="flex items-center gap-1.5 font-semibold text-slate-700">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>雙向參考線：拉出紅線與浮動標籤，隨時精準讀取尺寸</span>
+              <span>精準實線十字游標：隨指拖曳，即時浮動顯示測量尺寸</span>
             </div>
             <div className="flex items-center gap-1.5 font-semibold text-slate-700">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>背景切換：白、牛皮黃、灰、黑 4 種方格底色隨選</span>
+              <span>4 種方格底色：白色、Tajima 捲尺黃、50% 中性灰、深黑</span>
             </div>
             <div className="flex items-center gap-1.5 font-semibold text-slate-700">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>自動記憶：每台手機只需校準一次，本地長久儲存</span>
+              <span>自動離線記憶：每台設備只需校準一次，隨開隨用</span>
             </div>
           </div>
         </div>
@@ -77,8 +77,8 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
         {/* Author & Action buttons */}
         <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
           <div className="flex items-center justify-between text-xs text-slate-500">
-            <span>作者：Kitty Wai Ying</span>
-            <span className="font-mono text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">v2.0 離線獨立版</span>
+            <span>作者：Kitty Ng</span>
+            <span className="font-mono text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">v2.1 實物量規版</span>
           </div>
 
           {/* Email button */}
@@ -92,13 +92,13 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
 
           {/* Buy Me a Coffee button */}
           <a
-            href="https://buymeacoffee.com/kittywaiying"
+            href="https://buymeacoffee.com/kittyng89"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-[#000000] font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
           >
             <Coffee className="w-4 h-4 fill-black" />
-            <span>請作者喝杯咖啡 (Buy Me a Coffee) ☕</span>
+            <span>請作者喝杯咖啡 (Buy Me a Coffee: kittyng89) ☕</span>
           </a>
         </div>
 

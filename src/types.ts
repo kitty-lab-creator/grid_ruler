@@ -32,31 +32,31 @@ export const BG_COLOR_OPTIONS: BgColorOption[] = [
   },
   {
     id: 'yellow',
-    name: '方格牛皮黃',
-    bgColor: '#fef9c3', // warm pale craft yellow
-    canvasBg: '#fef9c3',
-    minorLineColor: '#fde047', // warm amber yellow
-    majorLineColor: '#eab308',
-    axisLineColor: '#713f12',  // deep warm amber/brown
-    textColor: '#713f12',
-    subTickColor: '#ca8a04',
-    guideLineColor: '#dc2626',
-    guideHandleColor: '#dc2626',
-    cardBgClass: 'bg-amber-50',
+    name: 'Tajima 捲尺黃',
+    bgColor: '#ffd000', // Iconic Tajima measuring tape industrial golden-yellow
+    canvasBg: '#ffd000',
+    minorLineColor: '#dfb500', // warm subtle 1mm grid
+    majorLineColor: '#b88e00', // high-legibility 1cm grid
+    axisLineColor: '#000000',  // solid black Tajima scale lines
+    textColor: '#000000',      // bold black numbering
+    subTickColor: '#000000',
+    guideLineColor: '#e11d48', // vivid red solid guide line
+    guideHandleColor: '#e11d48',
+    cardBgClass: 'bg-amber-400',
   },
   {
     id: 'grey',
-    name: '工藝灰',
-    bgColor: '#f1f5f9', // soft slate grey
-    canvasBg: '#f1f5f9',
-    minorLineColor: '#e2e8f0',
-    majorLineColor: '#94a3b8',
-    axisLineColor: '#334155',
-    textColor: '#1e293b',
-    subTickColor: '#64748b',
-    guideLineColor: '#e11d48',
-    guideHandleColor: '#e11d48',
-    cardBgClass: 'bg-slate-100',
+    name: '50% 標準灰',
+    bgColor: '#808080', // 50% neutral grey (rgb 128, 128, 128)
+    canvasBg: '#808080',
+    minorLineColor: '#919191', // soft lighter grey grid
+    majorLineColor: '#5a5a5a', // darker contrast line
+    axisLineColor: '#ffffff',  // crisp white axis line for 50% grey
+    textColor: '#ffffff',      // clean white legible text
+    subTickColor: '#ffffff',
+    guideLineColor: '#ef4444', // high-contrast red guide line
+    guideHandleColor: '#ef4444',
+    cardBgClass: 'bg-neutral-500',
   },
   {
     id: 'black',
