@@ -1,6 +1,8 @@
 {
   "name": "方格紙量尺",
-  "description": "專為手工藝與微型測量打造的離線方格紙量尺，支援實體卡片校準、自訂參考線與單位切換。",
+  "description": "離線方格紙量尺，支援實體卡片校準、自訂參考線與單位切換。",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
