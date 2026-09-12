@@ -9,15 +9,15 @@
 
 ---
 
-## 🚀 如何在 GitHub 免費開啟你的專屬網站 (GitHub Pages 設定指南)
+## 🚀 如何在 GitHub 免費開啟你的專屬網站 (GitHub Pages)
 
-當你在 GitHub 上只看到代碼與這份說明文件時，請依照下列步驟開啟網頁：
+本應用程式採用免編譯的獨立純靜態 HTML 技術，直接開啟 GitHub Pages 即可：
 
 1. 點擊本 GitHub 儲存庫上方的 **Settings** (設定，齒輪圖示)。
-2. 在左側選單中找到並點選 **Pages**。
-3. 在 **Build and deployment** 底下的 **Source** 下拉選單中，選擇 **GitHub Actions**。
-4. 儲存後，GitHub 會自動執行本專案內建的部署流程（約 1 分鐘）。
-5. 部署完成後，頁面最上方即會顯示你的專屬網址：`https://<你的用戶名>.github.io/grid_ruler/`！
+2. 在左側選單中點選 **Pages**。
+3. 在 **Build and deployment** 底下的 **Source** 選擇 **Deploy from a branch**。
+4. Branch 選擇 **main**，目錄保持 **/ (root)**，點擊 **Save**。
+5. 等待 1~2 分鐘，頁面頂端即會顯示您的專屬綠色網址：`https://<你的用戶名>.github.io/grid_ruler/`！
 
 ---
 
