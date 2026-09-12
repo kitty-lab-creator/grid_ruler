@@ -48,9 +48,11 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.fillStyle = colorScheme.canvasBg;
     ctx.fillRect(0, 0, width, height);
 
-    // Origin coordinates: left-bottom margin
+    // Origin coordinates: left-bottom margin (accounting for iOS safe area bottom)
+    const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
+    const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
     const originX = 40;
-    const originY = height - 40;
+    const originY = height - 40 - safeAreaBottom;
 
     // Scale calculation
     const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
@@ -291,8 +293,10 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   const handleDragStart = (e: React.TouchEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
     if (!showGuides) return;
     const pos = getCanvasPos(e);
+    const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
+    const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
     const originX = 40;
-    const originY = window.innerHeight - 40;
+    const originY = window.innerHeight - 40 - safeAreaBottom;
 
     const currentX = originX + guideX;
     const currentY = originY - guideY;
@@ -320,8 +324,10 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     }
 
     const pos = getCanvasPos(e);
+    const safeAreaBottomStr = typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px' : '0px';
+    const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
     const originX = 40;
-    const originY = window.innerHeight - 40;
+    const originY = window.innerHeight - 40 - safeAreaBottom;
 
     let newX = guideX;
     let newY = guideY;

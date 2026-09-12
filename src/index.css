@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -10,6 +15,7 @@
   body,
   #root {
     width: 100%;
+    height: 100vh;
     height: 100dvh;
     margin: 0;
     padding: 0;

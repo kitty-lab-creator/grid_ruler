@@ -22,6 +22,10 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0f172a">
   <style>
+    :root {
+      --safe-area-top: env(safe-area-inset-top, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -32,7 +36,7 @@
     }
     html, body {
       width: 100%;
-      height: 100%;
+      height: 100vh;
       height: 100dvh;
       overflow: hidden;
       position: fixed;
@@ -54,16 +58,17 @@
       cursor: crosshair;
     }
 
-    /* Floating Toolbar at Top-Right */
+    /* Floating Toolbar at Top-Right (with iOS safe area top offset and compact mobile spacing) */
     .toolbar-container {
       position: fixed;
       top: 14px;
+      top: calc(14px + env(safe-area-inset-top, 0px));
       right: 14px;
       z-index: 30;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       pointer-events: auto;
     }
     .btn-circle {
@@ -117,10 +122,11 @@
       transform: scale(0.92);
     }
 
-    /* Manual Tuning Bar at Top-Left */
+    /* Manual Tuning Bar at Top-Left (with iOS safe area top offset) */
     .tuning-bar {
       position: fixed;
       top: 14px;
+      top: calc(14px + env(safe-area-inset-top, 0px));
       left: 14px;
       z-index: 35;
       background: rgba(255, 255, 255, 0.96);
@@ -551,8 +557,10 @@
       ctx.fillStyle = theme.canvasBg;
       ctx.fillRect(0, 0, width, height);
 
+      const safeAreaBottomStr = getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px';
+      const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
       const originX = 40;
-      const originY = height - 40;
+      const originY = height - 40 - safeAreaBottom;
 
       const pixelsPerUnit = unit === 'cm' ? (ppi / 2.54) : ppi;
       const subDivisions = unit === 'cm' ? 10 : 8;
@@ -704,8 +712,10 @@
     function onPointerDown(e) {
       if (!showGuides) return;
       const pos = getCanvasPos(e);
+      const safeAreaBottomStr = getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px';
+      const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
       const originX = 40;
-      const originY = window.innerHeight - 40;
+      const originY = window.innerHeight - 40 - safeAreaBottom;
       const curX = originX + guideX;
       const curY = originY - guideY;
 
@@ -724,8 +734,10 @@
       if (!isDragging || !showGuides) return;
       if (e.cancelable) e.preventDefault();
       const pos = getCanvasPos(e);
+      const safeAreaBottomStr = getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom') || '0px';
+      const safeAreaBottom = parseFloat(safeAreaBottomStr) || 0;
       const originX = 40;
-      const originY = window.innerHeight - 40;
+      const originY = window.innerHeight - 40 - safeAreaBottom;
 
       if (dragMode === 'x' || dragMode === 'both') {
         guideX = Math.max(0, pos.x - originX);
@@ -769,6 +781,8 @@
     function cycleBgColor() {
       bgIndex = (bgIndex + 1) % COLOR_THEMES.length;
       saveState();
+      document.body.style.backgroundColor = COLOR_THEMES[bgIndex].canvasBg;
+      document.documentElement.style.backgroundColor = COLOR_THEMES[bgIndex].canvasBg;
       draw();
     }
 
@@ -859,6 +873,8 @@
 
     // Initialize
     document.getElementById('btn-unit').textContent = unit === 'cm' ? 'in/cm' : 'cm/in';
+    document.body.style.backgroundColor = COLOR_THEMES[bgIndex].canvasBg;
+    document.documentElement.style.backgroundColor = COLOR_THEMES[bgIndex].canvasBg;
     draw();
 
     // Directly open grid paper interface (NO automatic popup on first visit)

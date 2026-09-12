@@ -32,7 +32,10 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
   // If collapsed, only the upside-down triangle inside a rectangle button is shown at the top-right corner
   if (isCollapsed) {
     return (
-      <div className="fixed top-3 right-3 z-30 pointer-events-auto">
+      <div
+        className="fixed right-3 z-30 pointer-events-auto"
+        style={{ top: 'calc(12px + env(safe-area-inset-top, 0px))' }}
+      >
         <button
           id="btn-expand-toolbar"
           onClick={onToggleCollapse}
@@ -51,7 +54,8 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
   return (
     <div
       id="right-toolbar"
-      className="fixed top-3 right-3 sm:top-4 sm:right-4 z-30 flex flex-col items-center gap-2.5 pointer-events-auto"
+      className="fixed right-3 sm:right-4 z-30 flex flex-col items-center gap-2 sm:gap-2.5 pointer-events-auto"
+      style={{ top: 'calc(12px + env(safe-area-inset-top, 0px))' }}
     >
       {/* 1. Unit toggle: in/cm exchange */}
       <button

@@ -87,9 +87,16 @@ export default function App() {
 
   const currentColor = BG_COLOR_OPTIONS[bgIndex] || BG_COLOR_OPTIONS[0];
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.body.style.backgroundColor = currentColor.bgColor;
+      document.documentElement.style.backgroundColor = currentColor.bgColor;
+    }
+  }, [currentColor]);
+
   return (
     <div
-      className="relative w-screen h-[100dvh] overflow-hidden select-none touch-none"
+      className="relative w-screen h-screen h-[100dvh] overflow-hidden select-none touch-none"
       style={{ backgroundColor: currentColor.bgColor }}
     >
       {/* Background Interactive Ruler Canvas */}
