@@ -1,23 +1,11 @@
 # 方格紙量尺 (Grid Paper Ruler)
 
-📐 專為手工藝愛好者 (Crafters)、模型製作與微型物件測量設計的 1:1 實物比例方格量尺 Web App。
+📐 專為物件測量設計的 1:1 實物比例方格量尺 Web App。
 
 ## 🌐 線上直接使用 (無需安裝)
 
 - **AI Studio 官方發布網址**：[點此立即開啟方格紙量尺](https://ais-pre-umzwdkn3px7uq7e6f7c7ec-613672143499.asia-east1.run.app)
-- **GitHub Pages 網址**：若已開啟 GitHub Pages，網址為 `https://<你的GitHub用戶名>.github.io/grid_ruler/`
-
----
-
-## 🚀 如何在 GitHub 免費開啟你的專屬網站 (GitHub Pages)
-
-本應用程式採用免編譯的獨立純靜態 HTML 技術，直接開啟 GitHub Pages 即可：
-
-1. 點擊本 GitHub 儲存庫上方的 **Settings** (設定，齒輪圖示)。
-2. 在左側選單中點選 **Pages**。
-3. 在 **Build and deployment** 底下的 **Source** 選擇 **Deploy from a branch**。
-4. Branch 選擇 **main**，目錄保持 **/ (root)**，點擊 **Save**。
-5. 等待 1~2 分鐘，頁面頂端即會顯示您的專屬綠色網址：`https://<你的用戶名>.github.io/grid_ruler/`！
+- **GitHub Pages 網址**：若已開啟 GitHub Pages，網址為 `https://kitty-lab-creator.github.io/grid_ruler/`
 
 ---
 
