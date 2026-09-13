@@ -21,25 +21,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   onGuideChange,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const safeAreaRef = useRef<HTMLDivElement>(null);
-  const safeAreaBottomRef = useRef<number>(0);
   const draggingRef = useRef<'x' | 'y' | 'both' | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-
-  // Update safe area on resize
-  useEffect(() => {
-    const updateSafeArea = () => {
-      if (safeAreaRef.current) {
-        safeAreaBottomRef.current = parseFloat(getComputedStyle(safeAreaRef.current).paddingBottom) || 0;
-        draw();
-      }
-    };
-    
-    updateSafeArea();
-    window.addEventListener('resize', updateSafeArea);
-    return () => window.removeEventListener('resize', updateSafeArea);
-  }, []);
 
   // Measure and render
   const draw = useCallback(() => {
@@ -67,9 +50,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.fillRect(0, 0, width, height);
 
     // Origin coordinates: clean edge design
-    const safeAreaBottom = safeAreaBottomRef.current;
-    const originX = 26;
-    const originY = height - 26 - safeAreaBottom;
+    const originX = 28;
+    const originY = height - 28;
 
     // Scale calculation
     const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
@@ -138,7 +120,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
       // Number
       if (countX > 0) {
-        ctx.fillText(String(countX), x, originY + 19);
+        ctx.fillText(String(countX), x, originY + 16);
       }
 
       // Halfway tick (0.5 cm or 0.5 inch)
@@ -147,7 +129,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(halfX, originY);
-        ctx.lineTo(halfX, originY + 4);
+        ctx.lineTo(halfX, originY + 3);
         ctx.stroke();
       }
 
@@ -188,7 +170,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.textAlign = 'center';
     ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = colorScheme.textColor;
-    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 18);
+    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 16);
 
     // 5. Red Photoshop-style Reference Lines (when active)
     if (showGuides) {
@@ -313,9 +295,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const safeAreaBottom = safeAreaBottomRef.current;
-    const originX = 26;
-    const originY = rect.height - 26 - safeAreaBottom;
+    const originX = 28;
+    const originY = rect.height - 28;
 
     const currentX = originX + guideX;
     const currentY = originY - guideY;
@@ -346,9 +327,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const safeAreaBottom = safeAreaBottomRef.current;
-    const originX = 26;
-    const originY = rect.height - 26 - safeAreaBottom;
+    const originX = 28;
+    const originY = rect.height - 28;
 
     let newX = guideX;
     let newY = guideY;
@@ -388,19 +368,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   }, [handleDragMove, handleDragEnd]);
 
   return (
-    <>
-      <div 
-        ref={safeAreaRef}
-        className="absolute invisible pointer-events-none"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      />
-      <canvas
-        ref={canvasRef}
-        id="ruler-canvas"
-        className="absolute inset-0 block w-full h-full touch-none select-none cursor-crosshair"
-        onTouchStart={handleDragStart}
-        onMouseDown={handleDragStart}
-      />
-    </>
+    <canvas
+      ref={canvasRef}
+      id="ruler-canvas"
+      className="absolute inset-0 block w-full h-full touch-none select-none cursor-crosshair"
+      onTouchStart={handleDragStart}
+      onMouseDown={handleDragStart}
+    />
   );
 };
