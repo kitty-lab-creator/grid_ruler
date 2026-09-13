@@ -173,22 +173,23 @@
       </svg>
     </button>
 
-    <!-- 3. Background color cycle (Tajima Yellow, 50% Grey, Black, White segments) -->
+    <!-- 3. Background color cycle (Cross in circle: White top, Yellow right, Grey bottom, Black left) -->
     <button id="btn-color" class="btn-circle" title="切換背景顏色">
       <svg width="20" height="20" viewBox="0 0 24 24">
-        <!-- Top-Right: Tajima Yellow -->
-        <path d="M12 12 L12 2.5 A9.5 9.5 0 0 1 21.5 12 Z" fill="#ffd000"/>
-        <!-- Bottom-Right: 50% Neutral Grey -->
-        <path d="M12 12 L21.5 12 A9.5 9.5 0 0 1 12 21.5 Z" fill="#808080"/>
-        <!-- Bottom-Left: Pure Deep Black -->
-        <path d="M12 12 L12 21.5 A9.5 9.5 0 0 1 2.5 12 Z" fill="#09090b"/>
-        <!-- Top-Left: Crisp White -->
-        <path d="M12 12 L2.5 12 A9.5 9.5 0 0 1 12 2.5 Z" fill="#ffffff"/>
-        <!-- Outer circular border & center divider -->
-        <circle cx="12" cy="12" r="9.5" fill="none" stroke="#475569" stroke-width="1.5"/>
-        <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="#475569" stroke-width="1"/>
-        <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="#475569" stroke-width="1"/>
-        <circle cx="12" cy="12" r="2.5" fill="#f8fafc" stroke="#334155" stroke-width="1.2"/>
+        <!-- 4 Quadrant Fills -->
+        <!-- Top: White -->
+        <path d="M 12 12 L 5.64 5.64 A 9 9 0 0 1 18.36 5.64 Z" fill="#ffffff"/>
+        <!-- Right: Tajima Yellow -->
+        <path d="M 12 12 L 18.36 5.64 A 9 9 0 0 1 18.36 18.36 Z" fill="#ffd000"/>
+        <!-- Bottom: 50% Neutral Grey -->
+        <path d="M 12 12 L 18.36 18.36 A 9 9 0 0 1 5.64 18.36 Z" fill="#808080"/>
+        <!-- Left: Black -->
+        <path d="M 12 12 L 5.64 18.36 A 9 9 0 0 1 5.64 5.64 Z" fill="#0f172a"/>
+
+        <!-- Cohesive Outer Circle & Cross Lines -->
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="5.64" y1="5.64" x2="18.36" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18.36" y1="5.64" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
 
@@ -366,7 +367,7 @@
       { id: 'white', name: '白色', bg: '#ffffff', minor: '#e2e8f0', major: '#cbd5e1', axis: '#0f172a', text: '#0f172a', guide: '#dc2626' },
       { id: 'yellow', name: '捲尺黃', bg: '#ffd000', minor: '#dfb500', major: '#b88e00', axis: '#000000', text: '#000000', guide: '#dc2626' },
       { id: 'grey', name: '50% 灰', bg: '#808080', minor: '#919191', major: '#5a5a5a', axis: '#ffffff', text: '#ffffff', guide: '#ef4444' },
-      { id: 'black', name: '深黑', bg: '#09090b', minor: '#27272a', major: '#3f3f46', axis: '#e4e4e7', text: '#fafafa', guide: '#f87171' }
+      { id: 'black', name: '深黑', bg: '#09090b', minor: '#27272a', major: '#3f3f46', axis: '#38bdf8', text: '#ffffff', guide: '#f87171' }
     ];
 
     function getEstimatePpi() {
