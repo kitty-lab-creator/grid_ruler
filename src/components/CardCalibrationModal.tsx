@@ -73,23 +73,30 @@ export const CardCalibrationModal: React.FC<CardCalibrationModalProps> = ({
               height: `${cardHeightPx}px`,
               width: '100%',
               maxWidth: `${cardWidthPx}px`,
-              background: '#090d16',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.02) 5%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.9) 70%, #000 100%)',
-              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.02) 5%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.9) 70%, #000 100%)',
               borderRadius: '0 10px 10px 0',
             }}
-            className="relative flex items-center justify-between text-white select-none transition-[height] duration-75 overflow-hidden"
+            className="relative flex items-center justify-between text-white select-none transition-[height] duration-75"
           >
-            {/* Subtle watermark markings on the left */}
-            <div className="flex flex-col justify-between h-3/4 pl-5 opacity-35 pointer-events-none">
-              <span className="text-[11px] font-semibold tracking-wider text-slate-200">Bank Card</span>
-              <span className="font-mono text-[11px] tracking-widest text-slate-200">•••• •••• •••• 3456</span>
+            {/* Faded Card Surface Layer */}
+            <div
+              style={{
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.02) 5%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.9) 70%, #000 100%)',
+                maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.02) 5%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.9) 70%, #000 100%)',
+                borderRadius: '0 10px 10px 0',
+              }}
+              className="absolute inset-0 bg-[#090d16] flex items-center justify-between overflow-hidden pointer-events-none"
+            >
+              {/* Subtle watermark markings on the left */}
+              <div className="flex flex-col justify-between h-3/4 pl-5 opacity-35">
+                <span className="text-[11px] font-semibold tracking-wider text-slate-200">Bank Card</span>
+                <span className="font-mono text-[11px] tracking-widest text-slate-200">•••• •••• •••• 3456</span>
+              </div>
             </div>
 
-            {/* Right edge sharp red alignment arrow and badge */}
-            <div className="absolute right-2 top-0 bottom-0 w-[145px] flex flex-col items-end justify-between pointer-events-none">
+            {/* Sharp Unmasked Alignment Overlay: Arrows, Line & Clear Red Badge */}
+            <div className="absolute right-2 top-0 bottom-0 w-[160px] flex flex-col items-end justify-between pointer-events-none z-10">
               {/* Top Cap & Downward Arrowhead */}
-              <svg width="24" height="14" viewBox="0 0 24 14" className="mr-[1px]">
+              <svg width="24" height="14" viewBox="0 0 24 14" className="mr-[1px] drop-shadow-xs">
                 <line x1="2" y1="1.5" x2="22" y2="1.5" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
                 <path d="M5 2 L12 10 L19 2" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -97,13 +104,13 @@ export const CardCalibrationModal: React.FC<CardCalibrationModalProps> = ({
               {/* Vertical Connecting Line & Center Red Badge */}
               <div className="flex-1 w-6 relative flex items-center justify-center">
                 <div className="absolute top-0 bottom-0 w-[2.5px] bg-red-500"></div>
-                <div className="absolute right-7 bg-red-600 text-white font-bold text-[11px] px-2 py-0.5 rounded shadow whitespace-nowrap border border-white/20">
+                <div className="absolute right-7 bg-red-600 text-white font-bold text-[11px] px-2.5 py-1 rounded-md shadow-lg shadow-black/40 whitespace-nowrap border border-white/40 tracking-wide">
                   對齊真實卡片高度
                 </div>
               </div>
 
               {/* Bottom Cap & Upward Arrowhead */}
-              <svg width="24" height="14" viewBox="0 0 24 14" className="mr-[1px]">
+              <svg width="24" height="14" viewBox="0 0 24 14" className="mr-[1px] drop-shadow-xs">
                 <path d="M5 12 L12 4 L19 12" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 <line x1="2" y1="12.5" x2="22" y2="12.5" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
               </svg>
