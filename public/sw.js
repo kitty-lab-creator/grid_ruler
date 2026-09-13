@@ -1,5 +1,5 @@
 // Service Worker for 方格紙量尺
-const CACHE_NAME = 'ruler-grid-v2.3';
+const CACHE_NAME = 'ruler-grid-v2.3.1';
 const ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,11 @@ const ASSETS = [
   './icon.png',
   './icon-192.png',
   './icon-512.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './assets/donate/paypal.png',
+  './assets/donate/payme.png',
+  './assets/donate/alipayhk.png',
+  './assets/donate/wechatpay.png'
 ];
 
 self.addEventListener('install', (event) => {

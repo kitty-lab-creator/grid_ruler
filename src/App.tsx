@@ -5,6 +5,7 @@ import { RightToolbar } from './components/RightToolbar';
 import { ManualTuningBar } from './components/ManualTuningBar';
 import { CardCalibrationModal } from './components/CardCalibrationModal';
 import { InfoModal } from './components/InfoModal';
+import { DonateModal } from './components/DonateModal';
 
 function estimateInitialPpi(): number {
   if (typeof window === 'undefined') return 160;
@@ -46,6 +47,7 @@ export default function App() {
   const [isManualTuningOpen, setIsManualTuningOpen] = useState<boolean>(false);
   const [isCardSyncOpen, setIsCardSyncOpen] = useState<boolean>(false);
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
+  const [isDonateOpen, setIsDonateOpen] = useState<boolean>(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   // Sync to localStorage
@@ -150,7 +152,26 @@ export default function App() {
       )}
 
       {/* Information & Author Modal */}
-      {isInfoOpen && <InfoModal onClose={() => setIsInfoOpen(false)} />}
+      {isInfoOpen && (
+        <InfoModal
+          onClose={() => setIsInfoOpen(false)}
+          onOpenDonate={() => {
+            setIsInfoOpen(false);
+            setIsDonateOpen(true);
+          }}
+        />
+      )}
+
+      {/* Donation & Support Modal */}
+      {isDonateOpen && (
+        <DonateModal
+          onClose={() => setIsDonateOpen(false)}
+          onBackToInfo={() => {
+            setIsDonateOpen(false);
+            setIsInfoOpen(true);
+          }}
+        />
+      )}
     </div>
   );
 }

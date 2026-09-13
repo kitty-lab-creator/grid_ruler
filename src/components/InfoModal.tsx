@@ -3,9 +3,10 @@ import { Mail, Coffee, X, CheckCircle2, Smartphone } from 'lucide-react';
 
 interface InfoModalProps {
   onClose: () => void;
+  onOpenDonate?: () => void;
 }
 
-export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
+export const InfoModal: React.FC<InfoModalProps> = ({ onClose, onOpenDonate }) => {
   return (
     <div
       id="info-modal-overlay"
@@ -90,16 +91,15 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
             <span>回報問題 / 聯絡作者</span>
           </a>
 
-          {/* Buy Me a Coffee button */}
-          <a
-            href="https://buymeacoffee.com/kittywaiyiw"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-[#000000] font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+          {/* Support My Work button (Tajima yellow background with black text) */}
+          <button
+            onClick={() => {
+              if (onOpenDonate) onOpenDonate();
+            }}
+            className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-black font-bold text-xs flex items-center justify-center gap-2 shadow-xs border border-amber-400/60 transition-all cursor-pointer"
           >
-            <Coffee className="w-4 h-4 fill-black" />
-            <span>請作者喝杯咖啡</span>
-          </a>
+            <span>💖 贊助支持作者 (Support My Work)</span>
+          </button>
         </div>
 
         {/* Bottom dismiss */}
