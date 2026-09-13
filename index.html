@@ -162,35 +162,39 @@
       <span id="unit-text">in/cm</span>
     </button>
 
-    <!-- 2. Reference line toggle (ruler) -->
+    <!-- 2. Reference line toggle (rectangular ruler) -->
     <button id="btn-guide" class="btn-circle" title="參考線開關">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21.3 15.3l-6.6-6.6a1 1 0 0 0-1.4 0l-10.6 10.6a1 1 0 0 0 0 1.4l6.6 6.6a1 1 0 0 0 1.4 0l10.6-10.6a1 1 0 0 0 0-1.4z"/>
-        <path d="m14.5 12.5 2-2"/>
-        <path d="m11.5 9.5 2-2"/>
-        <path d="m8.5 6.5 2-2"/>
-        <path d="m17.5 15.5 2-2"/>
+        <rect x="2" y="6" width="20" height="12" rx="1.5" stroke="currentColor" stroke-width="2"/>
+        <line x1="6" y1="6" x2="6" y2="11" stroke="currentColor" stroke-width="2"/>
+        <line x1="10" y1="6" x2="10" y2="9.5" stroke="currentColor" stroke-width="1.8"/>
+        <line x1="14" y1="6" x2="14" y2="11" stroke="currentColor" stroke-width="2"/>
+        <line x1="18" y1="6" x2="18" y2="9.5" stroke="currentColor" stroke-width="1.8"/>
       </svg>
     </button>
 
-    <!-- 3. Background color cycle (palette) -->
+    <!-- 3. Background color cycle (Tajima Yellow, 50% Grey, Black, White segments) -->
     <button id="btn-color" class="btn-circle" title="切換背景顏色">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M12 3a9 9 0 0 1 7.79 4.5" stroke="#ef4444" stroke-width="2.5"/>
-        <path d="M19.79 7.5A9 9 0 0 1 21 12" stroke="#eab308" stroke-width="2.5"/>
-        <path d="M21 12a9 9 0 0 1-4.5 7.79" stroke="#22c55e" stroke-width="2.5"/>
-        <path d="M16.5 19.79A9 9 0 0 1 12 21" stroke="#06b6d4" stroke-width="2.5"/>
-        <path d="M12 21a9 9 0 0 1-7.79-4.5" stroke="#3b82f6" stroke-width="2.5"/>
-        <path d="M4.21 16.5A9 9 0 0 1 3 12" stroke="#8b5cf6" stroke-width="2.5"/>
-        <path d="M3 12a9 9 0 0 1 9-9" stroke="#ec4899" stroke-width="2.5"/>
-        <circle cx="12" cy="12" r="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <!-- Top-Right: Tajima Yellow -->
+        <path d="M12 12 L12 2.5 A9.5 9.5 0 0 1 21.5 12 Z" fill="#ffd000"/>
+        <!-- Bottom-Right: 50% Neutral Grey -->
+        <path d="M12 12 L21.5 12 A9.5 9.5 0 0 1 12 21.5 Z" fill="#808080"/>
+        <!-- Bottom-Left: Pure Deep Black -->
+        <path d="M12 12 L12 21.5 A9.5 9.5 0 0 1 2.5 12 Z" fill="#09090b"/>
+        <!-- Top-Left: Crisp White -->
+        <path d="M12 12 L2.5 12 A9.5 9.5 0 0 1 12 2.5 Z" fill="#ffffff"/>
+        <!-- Outer circular border & center divider -->
+        <circle cx="12" cy="12" r="9.5" fill="none" stroke="#475569" stroke-width="1.5"/>
+        <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="#475569" stroke-width="1"/>
+        <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="#475569" stroke-width="1"/>
+        <circle cx="12" cy="12" r="2.5" fill="#f8fafc" stroke="#334155" stroke-width="1.2"/>
       </svg>
     </button>
 
-    <!-- 4. Card Sync (credit card) -->
+    <!-- 4. Card Sync (credit card in sleek black) -->
     <button id="btn-card" class="btn-circle" title="實體卡片校準">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect width="20" height="14" x="2" y="5" rx="2"/>
         <line x1="2" x2="22" y1="10" y2="10"/>
       </svg>
@@ -342,6 +346,11 @@
         <a href="https://buymeacoffee.com/kittywaiyiw" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; background: #FFDD00; border: none; border-radius: 10px; color: #000000; text-decoration: none; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
           ☕ 請作者喝杯咖啡
         </a>
+
+        <div style="font-size: 10px; color: #94a3b8; text-align: center; margin-top: 2px; line-height: 1.5;">
+          <div>Icon: <a href="https://www.flaticon.com/free-icon/pencil_7933787?term=set-square&page=1&position=5&origin=style&related_id=7933787" target="_blank" rel="noopener noreferrer" style="color: #64748b; text-decoration: underline;">Pencil free icon (Kawaii Lineal Color)</a> by Flaticon</div>
+          <div style="margin-top: 2px; color: #94a3b8;">Application created with Google AI Studio via vibe coding</div>
+        </div>
 
         <button id="btn-info-close" style="padding: 8px; background: #f8fafc; border: none; border-radius: 10px; color: #64748b; font-size: 12px; font-weight: 600; cursor: pointer;">
           關閉

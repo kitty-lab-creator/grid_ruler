@@ -1,7 +1,7 @@
 {
   "id": "/",
   "name": "方格紙量尺",
-  "short_name": "方格量尺",
+  "short_name": "方格紙量尺",
   "description": "專為隨身物件測量設計。無需連網，支援全離線運作。",
   "start_url": "./index.html",
   "scope": "./",

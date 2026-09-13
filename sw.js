@@ -1,9 +1,10 @@
 // Service Worker for 方格紙量尺
-const CACHE_NAME = 'ruler-grid-v11-clean';
+const CACHE_NAME = 'ruler-grid-v12-kawaii';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './icon.svg',
   './icon.png',
   './icon-192.png',
   './icon-512.png',
