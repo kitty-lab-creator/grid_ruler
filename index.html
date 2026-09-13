@@ -9,7 +9,7 @@
   <meta property="og:description" content="專為隨身物件測量設計。無需連網，支援全離線運作。">
   <meta property="og:image" content="./icon-512.png">
 
-  <!-- Apple iOS Safari Home Screen Icon & PWA Settings -->
+  <!-- iOS Safari PWA / Web App Settings -->
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,9 +21,825 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./icon.png">
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0f172a">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #ffffff;
+    }
+    #ruler-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+    /* Toolbar & UI */
+    .btn-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #334155;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+    .btn-circle:active {
+      transform: scale(0.92);
+      background: #f1f5f9;
+    }
+    .btn-circle.active-red {
+      background: #dc2626 !important;
+      color: #ffffff !important;
+      border-color: #b91c1c !important;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
+    }
+    .btn-circle.active-blue {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #1d4ed8 !important;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+    }
+    .btn-rect {
+      width: 44px;
+      height: 36px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+    .btn-rect:active {
+      transform: scale(0.92);
+      background: #f1f5f9;
+    }
+    /* Modals & Popups */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      touch-action: pan-y;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 340px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.25);
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-close-corner {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .modal-close-corner:hover {
+      color: #0f172a;
+      background: #e2e8f0;
+    }
+  </style>
 </head>
-<body class="bg-white text-slate-900 select-none touch-none overflow-hidden m-0 p-0">
-  <div id="root" class="w-full h-full min-h-screen"></div>
-  <script type="module" src="./src/main.tsx"></script>
+<body>
+  <!-- Interactive Ruler Canvas -->
+  <canvas id="ruler-canvas"></canvas>
+
+  <!-- Right Floating Toolbar -->
+  <div id="right-toolbar" style="position: fixed; right: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 30; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+    <!-- 1. Unit exchange (in/cm) -->
+    <button id="btn-unit" class="btn-circle" title="切換單位 (cm / in)">
+      <span id="unit-text">in/cm</span>
+    </button>
+
+    <!-- 2. Reference line toggle (ruler) -->
+    <button id="btn-guide" class="btn-circle" title="參考線開關">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21.3 15.3l-6.6-6.6a1 1 0 0 0-1.4 0l-10.6 10.6a1 1 0 0 0 0 1.4l6.6 6.6a1 1 0 0 0 1.4 0l10.6-10.6a1 1 0 0 0 0-1.4z"/>
+        <path d="m14.5 12.5 2-2"/>
+        <path d="m11.5 9.5 2-2"/>
+        <path d="m8.5 6.5 2-2"/>
+        <path d="m17.5 15.5 2-2"/>
+      </svg>
+    </button>
+
+    <!-- 3. Background color cycle (palette) -->
+    <button id="btn-color" class="btn-circle" title="切換背景顏色">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 3a9 9 0 0 1 7.79 4.5" stroke="#ef4444" stroke-width="2.5"/>
+        <path d="M19.79 7.5A9 9 0 0 1 21 12" stroke="#eab308" stroke-width="2.5"/>
+        <path d="M21 12a9 9 0 0 1-4.5 7.79" stroke="#22c55e" stroke-width="2.5"/>
+        <path d="M16.5 19.79A9 9 0 0 1 12 21" stroke="#06b6d4" stroke-width="2.5"/>
+        <path d="M12 21a9 9 0 0 1-7.79-4.5" stroke="#3b82f6" stroke-width="2.5"/>
+        <path d="M4.21 16.5A9 9 0 0 1 3 12" stroke="#8b5cf6" stroke-width="2.5"/>
+        <path d="M3 12a9 9 0 0 1 9-9" stroke="#ec4899" stroke-width="2.5"/>
+        <circle cx="12" cy="12" r="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+      </svg>
+    </button>
+
+    <!-- 4. Card Sync (credit card) -->
+    <button id="btn-card" class="btn-circle" title="實體卡片校準">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="20" height="14" x="2" y="5" rx="2"/>
+        <line x1="2" x2="22" y1="10" y2="10"/>
+      </svg>
+    </button>
+
+    <!-- 5. Manual Tuning (sliders) -->
+    <button id="btn-tune" class="btn-circle" title="手動 PPI 比例微調">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" x2="4" y1="21" y2="14"/>
+        <line x1="4" x2="4" y1="10" y2="3"/>
+        <line x1="12" x2="12" y1="21" y2="12"/>
+        <line x1="12" x2="12" y1="8" y2="3"/>
+        <line x1="20" x2="20" y1="21" y2="16"/>
+        <line x1="20" x2="20" y1="12" y2="3"/>
+        <line x1="1" x2="7" y1="14" y2="14"/>
+        <line x1="9" x2="15" y1="8" y2="8"/>
+        <line x1="17" x2="23" y1="16" y2="16"/>
+      </svg>
+    </button>
+
+    <!-- 6. Info (?) -->
+    <button id="btn-info" class="btn-circle" title="說明與作者">
+      <span style="font-size: 16px; font-weight: 800; color: #0f172a;">?</span>
+    </button>
+
+    <!-- 7. Collapse button (^) -->
+    <button id="btn-collapse" class="btn-rect" title="收起選單">
+      <svg id="collapse-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Manual Tuning Top Bar -->
+  <div id="tuning-bar" style="display: none; position: fixed; left: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 40; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; align-items: center; gap: 8px; color: #1e293b;">
+    <span style="font-size: 12px; font-weight: 700; color: #334155;">比例</span>
+    <button id="btn-ppi-minus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
+    <input type="number" id="ppi-input" step="0.1" min="30" max="800" style="width: 72px; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 2px; color: #0f172a; outline: none;">
+    <span style="font-size: 11px; font-weight: 600; color: #64748b;">PPI</span>
+    <button id="btn-ppi-plus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+    <button id="btn-ppi-reset" title="重設預設值" style="background: none; border: none; font-size: 13px; color: #94a3b8; cursor: pointer; padding: 2px;">↺</button>
+    <button id="btn-ppi-close" title="關閉" style="background: none; border: none; font-size: 16px; color: #94a3b8; cursor: pointer; padding: 2px;">×</button>
+  </div>
+
+  <!-- Card Calibration Modal -->
+  <div id="modal-card-sync" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-close-corner" id="btn-card-close-x">✕</div>
+      <div style="text-align: center; margin-bottom: 12px; padding-right: 20px;">
+        <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">💳 信用卡高度校準</div>
+        <p style="font-size: 12px; color: #475569; line-height: 1.4;">
+          將任何一張<strong style="color: #2563eb;">信用卡、八達通或健保卡</strong>貼在螢幕上，微調至高度完全吻合：
+        </p>
+      </div>
+
+      <!-- Card Graphic Preview Box -->
+      <div style="width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; min-height: 140px; overflow: hidden; margin-bottom: 12px;">
+        <div id="preview-card" style="width: 100%; max-width: 240px; height: 120px; background: linear-gradient(90deg, rgba(248, 250, 252, 0) 0%, rgba(30, 41, 59, 0.28) 25%, rgba(15, 23, 42, 0.92) 65%, #090d16 100%); border-top: 1.5px solid rgba(255, 255, 255, 0.25); border-bottom: 1.5px solid rgba(255, 255, 255, 0.2); border-right: 2px solid rgba(255, 255, 255, 0.35); border-radius: 0 10px 10px 0; position: relative; display: flex; align-items: center; justify-content: space-between; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+          <div style="display: flex; flex-direction: column; justify-content: space-between; height: 70%; padding-left: 14px; opacity: 0.35; color: #fff;">
+            <span style="font-size: 10px; font-weight: 600;">Bank Card</span>
+            <span style="font-size: 10px; font-family: monospace;">•••• •••• •••• 3456</span>
+          </div>
+
+          <div style="position: absolute; right: 8px; top: 0; bottom: 0; width: 140px; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; pointer-events: none;">
+            <svg width="24" height="14" viewBox="0 0 24 14">
+              <line x1="2" y1="1.5" x2="22" y2="1.5" stroke="#ef4444" stroke-width="3" stroke-linecap="round" />
+              <path d="M5 2 L12 10 L19 2" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+
+            <div style="flex: 1; width: 24px; position: relative; display: flex; align-items: center; justify-content: center;">
+              <div style="position: absolute; top: 0; bottom: 0; width: 2.5px; background: #ef4444;"></div>
+              <div style="position: absolute; right: 28px; background: #dc2626; color: #fff; font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.25);">
+                對齊真實卡片高度
+              </div>
+            </div>
+
+            <svg width="24" height="14" viewBox="0 0 24 14">
+              <path d="M5 12 L12 4 L19 12" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="2" y1="12.5" x2="22" y2="12.5" stroke="#ef4444" stroke-width="3" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step adjust buttons -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+        <button id="btn-card-shrink" style="padding: 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-weight: bold; font-size: 13px; color: #1e293b; cursor: pointer;">
+          ▼ 縮小高度
+        </button>
+        <button id="btn-card-grow" style="padding: 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; font-weight: bold; font-size: 13px; color: #1e293b; cursor: pointer;">
+          ▲ 放大高度
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 8px; border-top: 1px solid #f1f5f9; margin-bottom: 6px;">
+        <button id="btn-card-skip" style="padding: 10px; background: #f1f5f9; border: none; border-radius: 12px; font-weight: 600; font-size: 13px; color: #475569; cursor: pointer;">
+          跳過
+        </button>
+        <button id="btn-card-save" style="padding: 10px; background: #2563eb; border: none; border-radius: 12px; font-weight: 700; font-size: 13px; color: #ffffff; cursor: pointer; box-shadow: 0 3px 8px rgba(37,99,235,0.3);">
+          完成校準 ✓
+        </button>
+      </div>
+
+      <div style="text-align: center;">
+        <button id="btn-card-reset-system" style="background: none; border: none; font-size: 11px; color: #94a3b8; text-decoration: underline; cursor: pointer;">
+          還原系統預測比例
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Information Modal -->
+  <div id="modal-info" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-close-corner" id="btn-info-close-x">✕</div>
+      <div style="display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; margin-bottom: 10px;">
+        <img src="./icon.png" width="28" height="28" style="border-radius: 6px;" alt="Icon">
+        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">方格紙量尺</h3>
+      </div>
+
+      <div style="font-size: 12px; color: #475569; line-height: 1.5; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+        <p>專為<strong style="color: #0f172a;">隨身物件測量</strong>設計。無需連網，支援全離線運作。</p>
+
+        <div style="background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+          <div>✓ <strong>實體卡片校準</strong>：以身邊的信用卡/八達通 1:1 高度吻合</div>
+          <div>✓ <strong>精準實線十字游標</strong>：隨指拖曳，即時浮動顯示測量尺寸</div>
+          <div>✓ <strong>4 種方格底色</strong>：白色、Tajima 捲尺黃、50% 中性灰、深黑</div>
+          <div>✓ <strong>自動離線記憶</strong>：每台設備只需校準一次，隨開隨用</div>
+        </div>
+
+        <div style="background: #eff6ff; padding: 10px; border-radius: 12px; border: 1px solid #dbeafe; font-size: 11px; color: #1e3a8a;">
+          <div style="font-weight: 700; margin-bottom: 2px;">📱 加到手機主畫面當作專屬 App：</div>
+          <div>• <strong>iPhone Safari</strong>：點下方分享按鈕 ➔ 加入主畫面</div>
+          <div>• <strong>Android Chrome</strong>：點右上三點選單 ➔ 安裝/加到主畫面</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid #f1f5f9;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b;">
+          <span>作者：Kitty Ng</span>
+          <span style="font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">v2.2 離線通用版</span>
+        </div>
+
+        <a href="mailto:kitty.waiying@gmail.com?subject=方格紙量尺問題與回報" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; color: #1e293b; text-decoration: none; font-size: 12px; font-weight: 600;">
+          ✉ 回報問題 / 聯絡作者
+        </a>
+
+        <a href="https://buymeacoffee.com/kittywaiyiw" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; background: #FFDD00; border: none; border-radius: 10px; color: #000000; text-decoration: none; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+          ☕ 請作者喝杯咖啡
+        </a>
+
+        <button id="btn-info-close" style="padding: 8px; background: #f8fafc; border: none; border-radius: 10px; color: #64748b; font-size: 12px; font-weight: 600; cursor: pointer;">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Application Constants & Types ---
+    const CARD_HEIGHT_CM = 5.398; // ISO ID-1 card short edge standard (53.98mm)
+    const THEMES = [
+      { id: 'white', name: '白色', bg: '#ffffff', minor: '#e2e8f0', major: '#cbd5e1', axis: '#0f172a', text: '#0f172a', guide: '#dc2626' },
+      { id: 'yellow', name: '捲尺黃', bg: '#ffd000', minor: '#dfb500', major: '#b88e00', axis: '#000000', text: '#000000', guide: '#dc2626' },
+      { id: 'grey', name: '50% 灰', bg: '#808080', minor: '#919191', major: '#5a5a5a', axis: '#ffffff', text: '#ffffff', guide: '#ef4444' },
+      { id: 'black', name: '深黑', bg: '#09090b', minor: '#27272a', major: '#3f3f46', axis: '#e4e4e7', text: '#fafafa', guide: '#f87171' }
+    ];
+
+    function getEstimatePpi() {
+      const ua = navigator.userAgent || '';
+      if (/iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 132;
+      if (/iPhone|iPod/i.test(ua)) return 163;
+      if (/Android/i.test(ua)) return 160;
+      return 96;
+    }
+
+    const defaultPpi = getEstimatePpi();
+    let ppi = parseFloat(localStorage.getItem('calibrated_ppi')) || defaultPpi;
+    let unit = localStorage.getItem('ruler_unit') === 'in' ? 'in' : 'cm';
+    let themeIndex = parseInt(localStorage.getItem('ruler_bg_index') || '0', 10) % THEMES.length;
+    let showGuides = false;
+    let guideX = 140;
+    let guideY = 140;
+    let isDragging = false;
+    let isCollapsed = false;
+
+    // Origin position constants
+    const originX = 36;
+    function getOriginY(h) { return h - 36; }
+
+    const canvas = document.getElementById('ruler-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function saveSettings() {
+      localStorage.setItem('calibrated_ppi', String(ppi));
+      localStorage.setItem('ruler_unit', unit);
+      localStorage.setItem('ruler_bg_index', String(themeIndex));
+    }
+
+    function updateCardPreview() {
+      const pixelsPerCm = ppi / 2.54;
+      const heightPx = Math.round(pixelsPerCm * CARD_HEIGHT_CM);
+      const previewCard = document.getElementById('preview-card');
+      if (previewCard) {
+        previewCard.style.height = heightPx + 'px';
+      }
+    }
+
+    function render() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+
+      if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+
+      const theme = THEMES[themeIndex];
+      document.body.style.backgroundColor = theme.bg;
+
+      // 1. Canvas Background
+      ctx.fillStyle = theme.bg;
+      ctx.fillRect(0, 0, width, height);
+
+      const originY = getOriginY(height);
+      const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
+      const subDivisions = unit === 'cm' ? 10 : 8;
+      const pixelsPerSub = pixelsPerUnit / subDivisions;
+
+      // 2. Minor Grid Lines
+      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = theme.minor;
+      ctx.beginPath();
+      for (let x = originX + pixelsPerSub; x < width; x += pixelsPerSub) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, originY);
+      }
+      for (let y = originY - pixelsPerSub; y > 0; y -= pixelsPerSub) {
+        ctx.moveTo(originX, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
+      // 3. Major Grid Lines
+      ctx.lineWidth = 1.0;
+      ctx.strokeStyle = theme.major;
+      ctx.beginPath();
+      for (let x = originX + pixelsPerUnit; x < width; x += pixelsPerUnit) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, originY);
+      }
+      for (let y = originY - pixelsPerUnit; y > 0; y -= pixelsPerUnit) {
+        ctx.moveTo(originX, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
+      // 4. Solid Axes Lines
+      ctx.lineWidth = 2.0;
+      ctx.strokeStyle = theme.axis;
+      ctx.beginPath();
+      ctx.moveTo(0, originY);
+      ctx.lineTo(width, originY);
+      ctx.moveTo(originX, 0);
+      ctx.lineTo(originX, height);
+      ctx.stroke();
+
+      // 5. Ticks and Numbers
+      ctx.fillStyle = theme.text;
+      ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+      // X Axis
+      ctx.textAlign = 'center';
+      let countX = 0;
+      for (let x = originX; x < width; x += pixelsPerUnit) {
+        ctx.strokeStyle = theme.axis;
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(x, originY);
+        ctx.lineTo(x, originY + 7);
+        ctx.stroke();
+
+        if (countX > 0) {
+          ctx.fillText(String(countX), x, originY + 21);
+        }
+
+        const halfX = x + pixelsPerUnit / 2;
+        if (halfX < width) {
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(halfX, originY);
+          ctx.lineTo(halfX, originY + 4.5);
+          ctx.stroke();
+        }
+
+        if (unit === 'in') {
+          const q1 = x + pixelsPerUnit * 0.25;
+          const q3 = x + pixelsPerUnit * 0.75;
+          ctx.lineWidth = 0.8;
+          if (q1 < width) {
+            ctx.beginPath(); ctx.moveTo(q1, originY); ctx.lineTo(q1, originY + 3); ctx.stroke();
+          }
+          if (q3 < width) {
+            ctx.beginPath(); ctx.moveTo(q3, originY); ctx.lineTo(q3, originY + 3); ctx.stroke();
+          }
+        }
+        countX++;
+      }
+
+      // Y Axis
+      ctx.textAlign = 'right';
+      let countY = 0;
+      for (let y = originY; y > 0; y -= pixelsPerUnit) {
+        ctx.strokeStyle = theme.axis;
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(originX, y);
+        ctx.lineTo(originX - 7, y);
+        ctx.stroke();
+
+        if (countY > 0) {
+          ctx.fillText(String(countY), originX - 10, y + 4.5);
+        }
+
+        const halfY = y - pixelsPerUnit / 2;
+        if (halfY > 0) {
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(originX, halfY);
+          ctx.lineTo(originX - 4.5, halfY);
+          ctx.stroke();
+        }
+
+        if (unit === 'in') {
+          const q1 = y - pixelsPerUnit * 0.25;
+          const q3 = y - pixelsPerUnit * 0.75;
+          ctx.lineWidth = 0.8;
+          if (q1 > 0) {
+            ctx.beginPath(); ctx.moveTo(originX, q1); ctx.lineTo(originX - 3, q1); ctx.stroke();
+          }
+          if (q3 > 0) {
+            ctx.beginPath(); ctx.moveTo(originX, q3); ctx.lineTo(originX - 3, q3); ctx.stroke();
+          }
+        }
+        countY++;
+      }
+
+      // Origin corner unit label
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = theme.text;
+      ctx.fillText(unit.toUpperCase(), originX / 2, originY + 21);
+
+      // 6. Solid Red Reference Line & Live Coordinates Badge
+      if (showGuides) {
+        const lineX = originX + guideX;
+        const lineY = originY - guideY;
+
+        ctx.save();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = theme.guide;
+        ctx.setLineDash([]);
+
+        // Vertical guide line
+        ctx.beginPath();
+        ctx.moveTo(lineX, 0);
+        ctx.lineTo(lineX, height);
+        ctx.stroke();
+
+        // Horizontal guide line
+        ctx.beginPath();
+        ctx.moveTo(0, lineY);
+        ctx.lineTo(width, lineY);
+        ctx.stroke();
+
+        // Dragging halo
+        if (isDragging) {
+          ctx.beginPath();
+          ctx.arc(lineX, lineY, 14, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(220, 38, 38, 0.25)';
+          ctx.fill();
+        }
+
+        // Center dot
+        ctx.beginPath();
+        ctx.arc(lineX, lineY, 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = theme.guide;
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        // Measurement badge
+        const valX = (guideX / pixelsPerUnit).toFixed(2);
+        const valY = (guideY / pixelsPerUnit).toFixed(2);
+        const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}`;
+
+        ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        const textMetrics = ctx.measureText(labelText);
+        const badgeWidth = textMetrics.width + 16;
+        const badgeHeight = 26;
+
+        let badgeX = lineX + 12;
+        let badgeY = lineY - 34;
+
+        if (badgeX + badgeWidth > width - 12) {
+          badgeX = lineX - badgeWidth - 12;
+        }
+        if (badgeY < 12) {
+          badgeY = lineY + 12;
+        }
+
+        ctx.fillStyle = 'rgba(220, 38, 38, 0.95)';
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 6);
+        } else {
+          ctx.rect(badgeX, badgeY, badgeWidth, badgeHeight);
+        }
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'left';
+        ctx.fillText(labelText, badgeX + 8, badgeY + 17);
+
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    // --- Interactive Touch & Mouse Handling for Ruler Crosshairs ---
+    function getPointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    let dragMode = null; // 'both' | 'x' | 'y'
+
+    function handleStart(e) {
+      if (!showGuides) return;
+      const pos = getPointerPos(e);
+      const originY = getOriginY(window.innerHeight);
+      const curX = originX + guideX;
+      const curY = originY - guideY;
+
+      const nearX = Math.abs(pos.x - curX) < 38;
+      const nearY = Math.abs(pos.y - curY) < 38;
+
+      if (nearX && nearY) {
+        dragMode = 'both';
+      } else if (nearX) {
+        dragMode = 'x';
+      } else if (nearY) {
+        dragMode = 'y';
+      } else {
+        guideX = Math.max(0, pos.x - originX);
+        guideY = Math.max(0, originY - pos.y);
+        dragMode = 'both';
+      }
+      isDragging = true;
+      render();
+    }
+
+    function handleMove(e) {
+      if (!dragMode || !showGuides) return;
+      if (e.cancelable) e.preventDefault();
+      const pos = getPointerPos(e);
+      const originY = getOriginY(window.innerHeight);
+
+      if (dragMode === 'x' || dragMode === 'both') {
+        guideX = Math.max(0, pos.x - originX);
+      }
+      if (dragMode === 'y' || dragMode === 'both') {
+        guideY = Math.max(0, originY - pos.y);
+      }
+      render();
+    }
+
+    function handleEnd() {
+      if (dragMode) {
+        dragMode = null;
+        isDragging = false;
+        render();
+      }
+    }
+
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('touchstart', handleStart, { passive: false });
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('resize', render);
+
+    // --- UI Controls Event Listeners ---
+    // 1. Unit Toggle
+    const btnUnit = document.getElementById('btn-unit');
+    const unitText = document.getElementById('unit-text');
+    btnUnit.addEventListener('click', () => {
+      unit = unit === 'cm' ? 'in' : 'cm';
+      unitText.innerText = unit === 'cm' ? 'in/cm' : 'cm/in';
+      saveSettings();
+      render();
+    });
+
+    // 2. Reference Line Toggle
+    const btnGuide = document.getElementById('btn-guide');
+    btnGuide.addEventListener('click', () => {
+      showGuides = !showGuides;
+      if (showGuides) {
+        btnGuide.classList.add('active-red');
+      } else {
+        btnGuide.classList.remove('active-red');
+      }
+      render();
+    });
+
+    // 3. Color Theme Cycle
+    const btnColor = document.getElementById('btn-color');
+    btnColor.addEventListener('click', () => {
+      themeIndex = (themeIndex + 1) % THEMES.length;
+      saveSettings();
+      render();
+    });
+
+    // 4. Card Sync Modal
+    const btnCard = document.getElementById('btn-card');
+    const modalCard = document.getElementById('modal-card-sync');
+    btnCard.addEventListener('click', () => {
+      modalCard.style.display = 'flex';
+      updateCardPreview();
+    });
+    document.getElementById('btn-card-close-x').addEventListener('click', () => modalCard.style.display = 'none');
+    document.getElementById('btn-card-skip').addEventListener('click', () => modalCard.style.display = 'none');
+    document.getElementById('btn-card-save').addEventListener('click', () => {
+      saveSettings();
+      modalCard.style.display = 'none';
+      render();
+    });
+    document.getElementById('btn-card-shrink').addEventListener('click', () => {
+      ppi = Math.max(40, Math.min(600, +(ppi - 1.5).toFixed(1)));
+      updateCardPreview();
+      render();
+    });
+    document.getElementById('btn-card-grow').addEventListener('click', () => {
+      ppi = Math.max(40, Math.min(600, +(ppi + 1.5).toFixed(1)));
+      updateCardPreview();
+      render();
+    });
+    document.getElementById('btn-card-reset-system').addEventListener('click', () => {
+      ppi = defaultPpi;
+      updateCardPreview();
+      render();
+    });
+
+    // 5. Manual Tuning Bar
+    const btnTune = document.getElementById('btn-tune');
+    const tuningBar = document.getElementById('tuning-bar');
+    const ppiInput = document.getElementById('ppi-input');
+
+    btnTune.addEventListener('click', () => {
+      if (tuningBar.style.display === 'flex') {
+        tuningBar.style.display = 'none';
+        btnTune.classList.remove('active-blue');
+      } else {
+        tuningBar.style.display = 'flex';
+        btnTune.classList.add('active-blue');
+        ppiInput.value = ppi.toFixed(1);
+      }
+    });
+    document.getElementById('btn-ppi-close').addEventListener('click', () => {
+      tuningBar.style.display = 'none';
+      btnTune.classList.remove('active-blue');
+    });
+    document.getElementById('btn-ppi-minus').addEventListener('click', () => {
+      ppi = Math.max(30, Math.min(800, +(ppi - 0.5).toFixed(1)));
+      ppiInput.value = ppi.toFixed(1);
+      saveSettings();
+      render();
+    });
+    document.getElementById('btn-ppi-plus').addEventListener('click', () => {
+      ppi = Math.max(30, Math.min(800, +(ppi + 0.5).toFixed(1)));
+      ppiInput.value = ppi.toFixed(1);
+      saveSettings();
+      render();
+    });
+    document.getElementById('btn-ppi-reset').addEventListener('click', () => {
+      ppi = defaultPpi;
+      ppiInput.value = ppi.toFixed(1);
+      saveSettings();
+      render();
+    });
+    ppiInput.addEventListener('change', () => {
+      const val = parseFloat(ppiInput.value);
+      if (!isNaN(val) && val >= 30 && val <= 800) {
+        ppi = val;
+        saveSettings();
+        render();
+      }
+    });
+
+    // 6. Information Modal
+    const btnInfo = document.getElementById('btn-info');
+    const modalInfo = document.getElementById('modal-info');
+    btnInfo.addEventListener('click', () => modalInfo.style.display = 'flex');
+    document.getElementById('btn-info-close-x').addEventListener('click', () => modalInfo.style.display = 'none');
+    document.getElementById('btn-info-close').addEventListener('click', () => modalInfo.style.display = 'none');
+
+    // 7. Collapse / Expand Toolbar
+    const btnCollapse = document.getElementById('btn-collapse');
+    const collapseIcon = document.getElementById('collapse-icon');
+    const toolbarButtons = [btnUnit, btnGuide, btnColor, btnCard, btnTune, btnInfo];
+
+    btnCollapse.addEventListener('click', () => {
+      isCollapsed = !isCollapsed;
+      if (isCollapsed) {
+        toolbarButtons.forEach(b => b.style.display = 'none');
+        collapseIcon.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';
+      } else {
+        toolbarButtons.forEach(b => b.style.display = 'flex');
+        collapseIcon.innerHTML = '<polyline points="18 15 12 9 6 15"></polyline>';
+      }
+    });
+
+    // Register Service Worker for PWA Offline Support
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    // Initial setup & render
+    unitText.innerText = unit === 'cm' ? 'in/cm' : 'cm/in';
+    render();
+  </script>
 </body>
 </html>
