@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ruler, CreditCard, Sliders, HelpCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { Ruler, CreditCard, Sliders, ChevronUp, ChevronDown } from 'lucide-react';
 import { Unit } from '../types';
 
 interface RightToolbarProps {
@@ -29,43 +29,42 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
   isCollapsed,
   onToggleCollapse,
 }) => {
-  // If collapsed, only the upside-down triangle inside a rectangle button is shown at the top-right corner
+  // If collapsed: only show the expand button (ChevronDown) at top right
   if (isCollapsed) {
     return (
       <div
-        className="fixed right-3 z-30 pointer-events-auto"
-        style={{ top: 'calc(12px + env(safe-area-inset-top, 0px))' }}
+        className="fixed right-3.5 z-30 pointer-events-auto"
+        style={{ top: 'calc(14px + env(safe-area-inset-top, 0px))' }}
       >
         <button
           id="btn-expand-toolbar"
           onClick={onToggleCollapse}
-          className="w-11 h-9 bg-white/95 text-slate-800 border border-slate-300 shadow-md rounded-lg flex items-center justify-center hover:bg-slate-100 active:scale-95 transition-all"
-          title="展開控制按鈕"
-          aria-label="展開控制按鈕"
+          className="w-11 h-9 bg-white/95 text-slate-800 border border-slate-300 shadow-md rounded-xl flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-all cursor-pointer"
+          title="展開控制選單"
+          aria-label="展開控制選單"
         >
-          {/* Upside down triangle (▼) */}
           <ChevronDown className="w-5 h-5 text-slate-700 stroke-[2.5]" />
         </button>
       </div>
     );
   }
 
-  // Expanded state: vertical column of circle buttons from top-right down towards bottom-right, ending with upside triangle in rectangle button
+  // Expanded vertical stack
   return (
     <div
       id="right-toolbar"
-      className="fixed right-3 sm:right-4 z-30 flex flex-col items-center gap-2 sm:gap-2.5 pointer-events-auto"
-      style={{ top: 'calc(12px + env(safe-area-inset-top, 0px))' }}
+      className="fixed right-3.5 z-30 flex flex-col items-center gap-2.5 pointer-events-auto select-none"
+      style={{ top: 'calc(14px + env(safe-area-inset-top, 0px))' }}
     >
       {/* 1. Unit toggle: in/cm exchange */}
       <button
         id="btn-unit-exchange"
         onClick={onToggleUnit}
-        className="w-11 h-11 rounded-full bg-white/95 text-slate-800 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+        className="w-11 h-11 rounded-full bg-white/95 text-slate-800 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-90 transition-all cursor-pointer"
         title={`切換單位 (目前: ${unit === 'cm' ? '公分' : '英吋'})`}
         aria-label="單位切換"
       >
-        <span className="text-[12px] font-bold tracking-tight text-slate-800 select-none">
+        <span className="text-[12px] font-bold tracking-tight text-slate-800">
           {unit === 'cm' ? 'in/cm' : 'cm/in'}
         </span>
       </button>
@@ -74,26 +73,25 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
       <button
         id="btn-reference-line"
         onClick={onToggleGuides}
-        className={`w-11 h-11 rounded-full border shadow-md flex items-center justify-center active:scale-95 transition-all ${
+        className={`w-11 h-11 rounded-full border shadow-md flex items-center justify-center active:scale-90 transition-all cursor-pointer ${
           showGuides
-            ? 'bg-red-600 text-white border-red-700 shadow-red-500/30'
+            ? 'bg-red-600 text-white border-red-700 shadow-red-500/35'
             : 'bg-white/95 text-slate-700 border-slate-300 hover:bg-slate-50'
         }`}
         title="參考線開關"
         aria-label="參考線開關"
       >
-        <Ruler className="w-5 h-5" />
+        <Ruler className="w-5 h-5 stroke-[2]" />
       </button>
 
-      {/* 3. Background Color: Color wheel icon, cycles yellow -> grey -> black -> white */}
+      {/* 3. Background Color: Color palette wheel icon */}
       <button
         id="btn-bg-color"
         onClick={onCycleBgColor}
-        className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all group"
-        title="切換背景顏色 (白、Tajima 捲尺黃、50% 灰、黑)"
+        className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-90 transition-all cursor-pointer"
+        title="切換背景顏色 (白、Tajima 捲尺黃、50% 灰、深黑)"
         aria-label="切換背景顏色"
       >
-        {/* Color Wheel SVG icon */}
         <svg
           viewBox="0 0 24 24"
           className="w-5 h-5"
@@ -119,48 +117,47 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
       <button
         id="btn-card-sync"
         onClick={onOpenCardSync}
-        className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+        className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-90 transition-all cursor-pointer"
         title="實體卡片校準"
         aria-label="實體卡片校準"
       >
-        <CreditCard className="w-5 h-5 text-blue-600" />
+        <CreditCard className="w-5 h-5 text-blue-600 stroke-[2]" />
       </button>
 
       {/* 5. Manual Tuning: Sliders icon */}
       <button
         id="btn-manual-tuning"
         onClick={onToggleManualTuning}
-        className={`w-11 h-11 rounded-full border shadow-md flex items-center justify-center active:scale-95 transition-all ${
+        className={`w-11 h-11 rounded-full border shadow-md flex items-center justify-center active:scale-90 transition-all cursor-pointer ${
           isManualTuningOpen
-            ? 'bg-blue-600 text-white border-blue-700 shadow-blue-500/30'
+            ? 'bg-blue-600 text-white border-blue-700 shadow-blue-500/35'
             : 'bg-white/95 text-slate-700 border-slate-300 hover:bg-slate-50'
         }`}
-        title="手動數值微調"
-        aria-label="手動數值微調"
+        title="手動 PPI 比例微調"
+        aria-label="手動 PPI 比例微調"
       >
-        <Sliders className="w-5 h-5" />
+        <Sliders className="w-5 h-5 stroke-[2]" />
       </button>
 
       {/* 6. Information: "?" icon */}
       <button
         id="btn-info"
         onClick={onOpenInfo}
-        className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+        className="w-11 h-11 rounded-full bg-white/95 text-slate-700 border border-slate-300 shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-90 transition-all cursor-pointer"
         title="使用說明與聯絡作者"
         aria-label="使用說明與作者"
       >
-        <HelpCircle className="w-5 h-5 text-slate-700" />
+        <span className="text-base font-bold text-slate-800">?</span>
       </button>
 
-      {/* 7. Collapse toggle: Upside triangle in a rectangle button (▲) */}
+      {/* 7. Collapse toggle: ChevronUp in rounded rect */}
       <button
         id="btn-collapse-toolbar"
         onClick={onToggleCollapse}
-        className="w-11 h-9 bg-white/95 text-slate-700 border border-slate-300 shadow-md rounded-lg flex items-center justify-center hover:bg-slate-100 active:scale-95 transition-all mt-1"
-        title="收起按鈕節省畫面空間"
+        className="w-11 h-9 bg-white/95 text-slate-700 border border-slate-300 shadow-md rounded-xl flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-all cursor-pointer mt-0.5"
+        title="收起控制按鈕"
         aria-label="收起控制按鈕"
       >
-        {/* Upside triangle (▲) */}
         <ChevronUp className="w-5 h-5 text-slate-700 stroke-[2.5]" />
       </button>
     </div>

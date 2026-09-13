@@ -24,6 +24,10 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   const draggingRef = useRef<'x' | 'y' | 'both' | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Origin offset constants
+  const originX = 36;
+  const getOriginY = (height: number) => height - 36;
+
   // Measure and render
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -36,77 +40,75 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const height = rect.height;
     const dpr = window.devicePixelRatio || 1;
 
-    if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+    if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
     }
 
     ctx.save();
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
-    // Background
+    // Background fill
     ctx.fillStyle = colorScheme.canvasBg;
     ctx.fillRect(0, 0, width, height);
 
-    // Origin coordinates: clean edge design
-    const originX = 28;
-    const originY = height - 28;
+    const originY = getOriginY(height);
 
     // Scale calculation
     const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
-    const subDivisions = unit === 'cm' ? 10 : 8; // 1mm for cm, 1/8" for inch
+    const subDivisions = unit === 'cm' ? 10 : 8; // 1mm for cm (10 subs/cm), 1/8" for inch (8 subs/in)
     const pixelsPerSub = pixelsPerUnit / subDivisions;
 
-    // 1. Draw minor grid lines (Confined to quadrant area to keep number gutters completely clean)
+    // 1. Minor Grid Lines (Confined to grid quadrant)
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = colorScheme.minorLineColor;
     ctx.beginPath();
-    // Vertical minor
+    // Vertical minor lines
     for (let x = originX + pixelsPerSub; x < width; x += pixelsPerSub) {
       ctx.moveTo(x, 0);
       ctx.lineTo(x, originY);
     }
-    // Horizontal minor
+    // Horizontal minor lines
     for (let y = originY - pixelsPerSub; y > 0; y -= pixelsPerSub) {
       ctx.moveTo(originX, y);
       ctx.lineTo(width, y);
     }
     ctx.stroke();
 
-    // 2. Draw major grid lines (per 1 unit, confined to quadrant area)
+    // 2. Major Grid Lines (Per 1 cm or 1 inch)
     ctx.lineWidth = 1.0;
     ctx.strokeStyle = colorScheme.majorLineColor;
     ctx.beginPath();
-    // Vertical major
+    // Vertical major lines
     for (let x = originX + pixelsPerUnit; x < width; x += pixelsPerUnit) {
       ctx.moveTo(x, 0);
       ctx.lineTo(x, originY);
     }
-    // Horizontal major
+    // Horizontal major lines
     for (let y = originY - pixelsPerUnit; y > 0; y -= pixelsPerUnit) {
       ctx.moveTo(originX, y);
       ctx.lineTo(width, y);
     }
     ctx.stroke();
 
-    // 3. Main Axes (X & Y lines)
+    // 3. Main Axes (Solid high-contrast axis lines)
     ctx.lineWidth = 2.0;
     ctx.strokeStyle = colorScheme.axisLineColor;
     ctx.beginPath();
-    // X Axis
+    // X Axis line
     ctx.moveTo(0, originY);
     ctx.lineTo(width, originY);
-    // Y Axis
+    // Y Axis line
     ctx.moveTo(originX, 0);
     ctx.lineTo(originX, height);
     ctx.stroke();
 
-    // 4. Tick marks and numbering (Bold and larger for crystal-clear vision)
+    // 4. Tick Marks and Numbering
     ctx.fillStyle = colorScheme.textColor;
-    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
-    // --- X Axis Ticks & Labels ---
+    // --- Horizontal (X) Axis Ticks & Labels ---
     ctx.textAlign = 'center';
     let countX = 0;
     for (let x = originX; x < width; x += pixelsPerUnit) {
@@ -115,28 +117,47 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(x, originY);
-      ctx.lineTo(x, originY + 6);
+      ctx.lineTo(x, originY + 7);
       ctx.stroke();
 
-      // Number
+      // Number label below tick
       if (countX > 0) {
-        ctx.fillText(String(countX), x, originY + 16);
+        ctx.fillText(String(countX), x, originY + 21);
       }
 
-      // Halfway tick (0.5 cm or 0.5 inch)
+      // Halfway tick (0.5 unit)
       const halfX = x + pixelsPerUnit / 2;
       if (halfX < width) {
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(halfX, originY);
-        ctx.lineTo(halfX, originY + 3);
+        ctx.lineTo(halfX, originY + 4.5);
         ctx.stroke();
+      }
+
+      // Quarter ticks for inches
+      if (unit === 'in') {
+        const q1 = x + pixelsPerUnit * 0.25;
+        const q3 = x + pixelsPerUnit * 0.75;
+        ctx.lineWidth = 0.8;
+        if (q1 < width) {
+          ctx.beginPath();
+          ctx.moveTo(q1, originY);
+          ctx.lineTo(q1, originY + 3);
+          ctx.stroke();
+        }
+        if (q3 < width) {
+          ctx.beginPath();
+          ctx.moveTo(q3, originY);
+          ctx.lineTo(q3, originY + 3);
+          ctx.stroke();
+        }
       }
 
       countX++;
     }
 
-    // --- Y Axis Ticks & Labels ---
+    // --- Vertical (Y) Axis Ticks & Labels ---
     ctx.textAlign = 'right';
     let countY = 0;
     for (let y = originY; y > 0; y -= pixelsPerUnit) {
@@ -145,12 +166,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(originX, y);
-      ctx.lineTo(originX - 6, y);
+      ctx.lineTo(originX - 7, y);
       ctx.stroke();
 
-      // Number
+      // Number label to the left of tick
       if (countY > 0) {
-        ctx.fillText(String(countY), originX - 8, y + 4.5);
+        ctx.fillText(String(countY), originX - 10, y + 4.5);
       }
 
       // Halfway tick
@@ -159,29 +180,47 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(originX, halfY);
-        ctx.lineTo(originX - 4, halfY);
+        ctx.lineTo(originX - 4.5, halfY);
         ctx.stroke();
+      }
+
+      // Quarter ticks for inches
+      if (unit === 'in') {
+        const q1 = y - pixelsPerUnit * 0.25;
+        const q3 = y - pixelsPerUnit * 0.75;
+        ctx.lineWidth = 0.8;
+        if (q1 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(originX, q1);
+          ctx.lineTo(originX - 3, q1);
+          ctx.stroke();
+        }
+        if (q3 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(originX, q3);
+          ctx.lineTo(originX - 3, q3);
+          ctx.stroke();
+        }
       }
 
       countY++;
     }
 
-    // Unit label at origin corner
+    // Unit label in origin corner box
     ctx.textAlign = 'center';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = colorScheme.textColor;
-    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 16);
+    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 21);
 
-    // 5. Red Photoshop-style Reference Lines (when active)
+    // 5. Solid Red Reference Lines & Interactive Crosshairs
     if (showGuides) {
       const lineX = originX + guideX;
       const lineY = originY - guideY;
 
       ctx.save();
-      // Line styling - solid red reference line per user request
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = colorScheme.guideLineColor;
-      ctx.setLineDash([]);
+      ctx.setLineDash([]); // Solid continuous line
 
       // Vertical guide line
       ctx.beginPath();
@@ -195,19 +234,15 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineTo(width, lineY);
       ctx.stroke();
 
-      // Solid cross center handle
-      ctx.setLineDash([]);
-      ctx.fillStyle = colorScheme.guideLineColor;
-
-      // Outer glow/ring if dragging
+      // Outer halo when dragging
       if (isDragging) {
         ctx.beginPath();
-        ctx.arc(lineX, lineY, 12, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
+        ctx.arc(lineX, lineY, 14, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(220, 38, 38, 0.25)';
         ctx.fill();
       }
 
-      // Intersection handle dot
+      // Intersection center dot
       ctx.beginPath();
       ctx.arc(lineX, lineY, 5.5, 0, Math.PI * 2);
       ctx.fillStyle = colorScheme.guideLineColor;
@@ -219,28 +254,27 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       // Live measurement values
       const valX = (guideX / pixelsPerUnit).toFixed(2);
       const valY = (guideY / pixelsPerUnit).toFixed(2);
-      const labelText = `X: ${valX} ${unit}   Y: ${valY} ${unit}`;
+      const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}`;
 
-      ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+      ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       const textMetrics = ctx.measureText(labelText);
       const badgeWidth = textMetrics.width + 16;
       const badgeHeight = 26;
 
-      // Position badge safely inside canvas
+      // Position badge safely relative to crosshair
       let badgeX = lineX + 12;
       let badgeY = lineY - 34;
 
-      if (badgeX + badgeWidth > width - 10) {
+      if (badgeX + badgeWidth > width - 12) {
         badgeX = lineX - badgeWidth - 12;
       }
       if (badgeY < 12) {
         badgeY = lineY + 12;
       }
 
-      // Badge background pill
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.94)';
+      // Badge pill background
+      ctx.fillStyle = 'rgba(220, 38, 38, 0.95)';
       ctx.beginPath();
-      // Support roundRect
       if (typeof ctx.roundRect === 'function') {
         ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 6);
       } else {
@@ -248,8 +282,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       }
       ctx.fill();
 
-      // Subtle shadow/border
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      // Subtle border for high visibility
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -276,7 +310,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [draw]);
 
-  // Pointer/Touch handling for draggable reference lines
+  // Pointer / Touch Handling
   const getCanvasPos = (e: React.TouchEvent | React.MouseEvent | TouchEvent | MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -289,19 +323,18 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     };
   };
 
-  const handleDragStart = (e: React.TouchEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePointerDown = (e: React.TouchEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
     if (!showGuides) return;
     const pos = getCanvasPos(e);
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const originX = 28;
-    const originY = rect.height - 28;
+    const originY = getOriginY(rect.height);
 
     const currentX = originX + guideX;
     const currentY = originY - guideY;
 
-    const hitThreshold = 38; // forgiving hit region for mobile touches
+    const hitThreshold = 38;
     const nearX = Math.abs(pos.x - currentX) < hitThreshold;
     const nearY = Math.abs(pos.y - currentY) < hitThreshold;
 
@@ -314,36 +347,45 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     } else if (nearY) {
       draggingRef.current = 'y';
       setIsDragging(true);
+    } else {
+      // Direct touch on grid: immediately jump crosshair to touch position
+      const newX = Math.max(0, pos.x - originX);
+      const newY = Math.max(0, originY - pos.y);
+      onGuideChange(newX, newY);
+      draggingRef.current = 'both';
+      setIsDragging(true);
     }
   };
 
-  const handleDragMove = useCallback((e: TouchEvent | MouseEvent) => {
-    if (!draggingRef.current || !showGuides) return;
-    if (e.cancelable) {
-      e.preventDefault();
-    }
+  const handlePointerMove = useCallback(
+    (e: TouchEvent | MouseEvent) => {
+      if (!draggingRef.current || !showGuides) return;
+      if (e.cancelable) {
+        e.preventDefault();
+      }
 
-    const pos = getCanvasPos(e);
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const originX = 28;
-    const originY = rect.height - 28;
+      const pos = getCanvasPos(e);
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const originY = getOriginY(rect.height);
 
-    let newX = guideX;
-    let newY = guideY;
+      let newX = guideX;
+      let newY = guideY;
 
-    if (draggingRef.current === 'x' || draggingRef.current === 'both') {
-      newX = Math.max(0, pos.x - originX);
-    }
-    if (draggingRef.current === 'y' || draggingRef.current === 'both') {
-      newY = Math.max(0, originY - pos.y);
-    }
+      if (draggingRef.current === 'x' || draggingRef.current === 'both') {
+        newX = Math.max(0, pos.x - originX);
+      }
+      if (draggingRef.current === 'y' || draggingRef.current === 'both') {
+        newY = Math.max(0, originY - pos.y);
+      }
 
-    onGuideChange(newX, newY);
-  }, [guideX, guideY, onGuideChange, showGuides]);
+      onGuideChange(newX, newY);
+    },
+    [guideX, guideY, onGuideChange, showGuides]
+  );
 
-  const handleDragEnd = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     if (draggingRef.current) {
       draggingRef.current = null;
       setIsDragging(false);
@@ -351,8 +393,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   }, []);
 
   useEffect(() => {
-    const onMove = (e: TouchEvent | MouseEvent) => handleDragMove(e);
-    const onUp = () => handleDragEnd();
+    const onMove = (e: TouchEvent | MouseEvent) => handlePointerMove(e);
+    const onUp = () => handlePointerUp();
 
     window.addEventListener('touchmove', onMove, { passive: false });
     window.addEventListener('touchend', onUp);
@@ -365,15 +407,15 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
-  }, [handleDragMove, handleDragEnd]);
+  }, [handlePointerMove, handlePointerUp]);
 
   return (
     <canvas
       ref={canvasRef}
       id="ruler-canvas"
       className="absolute inset-0 block w-full h-full touch-none select-none cursor-crosshair"
-      onTouchStart={handleDragStart}
-      onMouseDown={handleDragStart}
+      onTouchStart={handlePointerDown}
+      onMouseDown={handlePointerDown}
     />
   );
 };

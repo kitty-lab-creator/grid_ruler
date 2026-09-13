@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Coffee, X, CheckCircle2, BookmarkCheck, Smartphone } from 'lucide-react';
+import { Mail, Coffee, X, CheckCircle2, Smartphone } from 'lucide-react';
 
 interface InfoModalProps {
   onClose: () => void;
@@ -9,7 +9,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
   return (
     <div
       id="info-modal-overlay"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto select-none touch-manipulation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -29,7 +29,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
             aria-label="關閉"
           >
             <X className="w-5 h-5" />
@@ -84,7 +84,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
           {/* Email button */}
           <a
             href="mailto:kitty.waiying@gmail.com?subject=%E6%96%B9%E6%A0%BC%E7%B4%99%E9%87%8F%E5%B0%BA%20-%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%A0%B1%E8%88%87%E8%81%AF%E7%B5%A1"
-            className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-300 transition-colors"
+            className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-300 transition-colors cursor-pointer"
           >
             <Mail className="w-4 h-4 text-slate-600" />
             <span>回報問題 / 聯絡作者</span>
@@ -95,7 +95,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
             href="https://buymeacoffee.com/kittywaiyiw"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-[#000000] font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+            className="w-full py-2.5 px-3 rounded-xl bg-[#FFDD00] hover:bg-[#ffc800] active:scale-[0.98] text-[#000000] font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
           >
             <Coffee className="w-4 h-4 fill-black" />
             <span>請作者喝杯咖啡</span>
@@ -105,7 +105,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ onClose }) => {
         {/* Bottom dismiss */}
         <button
           onClick={onClose}
-          className="mt-1 w-full py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 transition-colors"
+          className="mt-1 w-full py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
         >
           關閉
         </button>

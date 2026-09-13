@@ -12,7 +12,7 @@ function estimateInitialPpi(): number {
   const isIPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (isIPad) return 132;
   const isIPhone = /iPhone|iPod/i.test(ua);
-  if (isIPhone) return 163;
+  if (isIPhone) return 163; // Standard 163 CSS points per inch on iOS
   const isAndroid = /Android/i.test(ua);
   if (isAndroid) return 160;
   return 96;
@@ -21,7 +21,7 @@ function estimateInitialPpi(): number {
 export default function App() {
   const defaultPpi = estimateInitialPpi();
 
-  // Load persisted settings or sensible defaults
+  // Persisted or fallback settings
   const [ppi, setPpi] = useState<number>(() => {
     const saved = localStorage.getItem('calibrated_ppi');
     return saved ? parseFloat(saved) || defaultPpi : defaultPpi;
@@ -37,18 +37,16 @@ export default function App() {
     return saved !== null ? parseInt(saved, 10) % BG_COLOR_OPTIONS.length : 0;
   });
 
-  // Reference lines: MUST be OFF by default per user requirement
+  // Reference lines: default OFF
   const [showGuides, setShowGuides] = useState<boolean>(false);
   const [guideX, setGuideX] = useState<number>(140);
   const [guideY, setGuideY] = useState<number>(140);
 
-  // Modals & UI controls
+  // Modals & Panels
   const [isManualTuningOpen, setIsManualTuningOpen] = useState<boolean>(false);
   const [isCardSyncOpen, setIsCardSyncOpen] = useState<boolean>(false);
   const [isInfoOpen, setIsInfoOpen] = useState<boolean>(false);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
-
-  // Direct entry without automatic card sync modal popup
 
   // Sync to localStorage
   const handlePpiChange = useCallback((newPpi: number) => {
@@ -64,7 +62,6 @@ export default function App() {
     });
   }, []);
 
-  // Background color cycle: white -> yellow -> grey -> black -> white
   const handleCycleBgColor = useCallback(() => {
     setBgIndex((prev) => {
       const next = (prev + 1) % BG_COLOR_OPTIONS.length;
@@ -96,7 +93,7 @@ export default function App() {
 
   return (
     <div
-      className="relative w-full min-h-screen overflow-hidden select-none touch-none"
+      className="relative w-full min-h-screen h-full overflow-hidden select-none touch-none"
       style={{ backgroundColor: currentColor.bgColor }}
     >
       {/* Background Interactive Ruler Canvas */}

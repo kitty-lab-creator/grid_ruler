@@ -46,11 +46,11 @@ export const ManualTuningBar: React.FC<ManualTuningBarProps> = ({
   return (
     <div
       id="manual-tuning-bar"
-      className="fixed left-3 sm:left-4 z-40 max-w-[calc(100vw-70px)] sm:max-w-md bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-lg px-3 py-2 flex items-center gap-2 text-slate-800 pointer-events-auto select-none"
-      style={{ top: 'calc(12px + env(safe-area-inset-top, 0px))' }}
+      className="fixed left-3.5 z-40 max-w-[calc(100vw-70px)] sm:max-w-md bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-lg px-3 py-1.5 flex items-center gap-2 text-slate-800 pointer-events-auto select-none"
+      style={{ top: 'calc(14px + env(safe-area-inset-top, 0px))' }}
     >
       <div className="flex items-center gap-1">
-        <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">
+        <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">
           比例
         </span>
       </div>
@@ -58,11 +58,11 @@ export const ManualTuningBar: React.FC<ManualTuningBarProps> = ({
       {/* Minus Button */}
       <button
         onClick={() => adjust(-0.5)}
-        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 flex items-center justify-center border border-slate-200 text-slate-700 transition-colors"
-        title="縮小 0.5"
-        aria-label="縮小格子"
+        className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 flex items-center justify-center border border-slate-200 text-slate-800 transition-colors cursor-pointer"
+        title="縮小 0.5 PPI"
+        aria-label="縮小 0.5 PPI"
       >
-        <Minus className="w-4 h-4 stroke-[2.5]" />
+        <Minus className="w-3.5 h-3.5 stroke-[2.5]" />
       </button>
 
       {/* Number Input Box */}
@@ -78,7 +78,7 @@ export const ManualTuningBar: React.FC<ManualTuningBarProps> = ({
           max="800"
           className="w-16 sm:w-20 text-center font-mono font-bold text-sm bg-slate-50 border border-slate-300 rounded-lg py-1 px-1 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <span className="ml-1 text-[11px] text-slate-500 font-medium hidden xs:inline">
+        <span className="ml-1 text-[11px] text-slate-500 font-semibold hidden xs:inline">
           PPI
         </span>
       </div>
@@ -86,29 +86,29 @@ export const ManualTuningBar: React.FC<ManualTuningBarProps> = ({
       {/* Plus Button */}
       <button
         onClick={() => adjust(0.5)}
-        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 flex items-center justify-center border border-slate-200 text-slate-700 transition-colors"
-        title="放大 0.5"
-        aria-label="放大格子"
+        className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 flex items-center justify-center border border-slate-200 text-slate-800 transition-colors cursor-pointer"
+        title="放大 0.5 PPI"
+        aria-label="放大 0.5 PPI"
       >
-        <Plus className="w-4 h-4 stroke-[2.5]" />
+        <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
       </button>
 
-      {/* Reset to system estimate */}
+      {/* Reset to suggested baseline */}
       <button
         onClick={() => onPpiChange(defaultPpi)}
-        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors ml-auto"
+        className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors ml-1 cursor-pointer"
         title={`重設為建議值 (${defaultPpi.toFixed(1)})`}
         aria-label="重設建議比例"
       >
-        <RotateCcw className="w-4 h-4" />
+        <RotateCcw className="w-3.5 h-3.5" />
       </button>
 
       {/* Close button */}
       <button
         onClick={onClose}
-        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-        title="收起微調工具列"
-        aria-label="收起微調工具列"
+        className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+        title="關閉微調列"
+        aria-label="關閉微調列"
       >
         <X className="w-4 h-4" />
       </button>
