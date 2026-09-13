@@ -411,13 +411,17 @@
     }
 
     function render() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.round(rect.width || window.innerWidth);
+      const height = Math.round(rect.height || window.innerHeight);
       const dpr = window.devicePixelRatio || 1;
 
-      if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
+      const targetW = Math.round(width * dpr);
+      const targetH = Math.round(height * dpr);
+
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
       }
 
       ctx.save();
@@ -657,7 +661,7 @@
     function handleStart(e) {
       if (!showGuides) return;
       const pos = getPointerPos(e);
-      const originY = getOriginY(window.innerHeight);
+      const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
       const curX = originX + guideX;
       const curY = originY - guideY;
 
@@ -683,7 +687,7 @@
       if (!dragMode || !showGuides) return;
       if (e.cancelable) e.preventDefault();
       const pos = getPointerPos(e);
-      const originY = getOriginY(window.innerHeight);
+      const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
 
       if (dragMode === 'x' || dragMode === 'both') {
         guideX = Math.max(0, pos.x - originX);
@@ -708,7 +712,17 @@
     window.addEventListener('touchmove', handleMove, { passive: false });
     window.addEventListener('mouseup', handleEnd);
     window.addEventListener('touchend', handleEnd);
-    window.addEventListener('resize', render);
+
+    function handleWindowResize() {
+      render();
+      setTimeout(render, 100);
+      setTimeout(render, 300);
+    }
+    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(render, 100);
+      setTimeout(render, 300);
+    });
 
     // --- UI Controls Event Listeners ---
     // 1. Unit Toggle
