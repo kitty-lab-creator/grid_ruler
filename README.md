@@ -3,6 +3,8 @@
 > **將任何手機、平板或筆電螢幕，瞬間轉化為 100% 精準的 1:1 實物工程量尺。**
 > 專為隨時隨地測量隨身物件、螺絲、文具、零件設計，免安裝、免連網、支援全離線運作與加到主畫面。
 
+👉 **[按此進入程式頁面（Launch Web App）](https://kitty-lab-creator.github.io/grid_ruler/)** 📐
+
 ---
 
 ## 🧐 為什麼你需要這款量尺？（Why Calibrated Screen Ruler?）
