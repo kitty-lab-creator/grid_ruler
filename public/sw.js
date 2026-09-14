@@ -9,10 +9,8 @@ const ASSETS = [
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',
-  './assets/donate/paypal.png',
-  './assets/donate/payme.png',
-  './assets/donate/alipayhk.png',
-  './assets/donate/wechatpay.png'
+  './assets/donate/paypal.jpg',
+  './assets/donate/paypal.png'
 ];
 
 self.addEventListener('install', (event) => {

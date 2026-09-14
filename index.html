@@ -117,7 +117,7 @@
     }
     .modal-card {
       width: 100%;
-      max-width: 340px;
+      max-width: 360px;
       background: #ffffff;
       border-radius: 20px;
       padding: 20px;
@@ -149,6 +149,32 @@
       color: #0f172a;
       background: #e2e8f0;
     }
+    /* BYOK Input Form Styles */
+    .byok-container {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 11px;
+    }
+    .byok-input {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-family: monospace;
+      font-size: 11px;
+      color: #0f172a;
+      background: #ffffff;
+      outline: none;
+      margin-top: 6px;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .byok-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
   </style>
 </head>
 <body>
@@ -177,15 +203,10 @@
     <button id="btn-color" class="btn-circle" title="切換背景顏色">
       <svg width="20" height="20" viewBox="0 0 24 24">
         <!-- 4 Quadrant Fills -->
-        <!-- Top: White -->
         <path d="M 12 12 L 5.64 5.64 A 9 9 0 0 1 18.36 5.64 Z" fill="#ffffff"/>
-        <!-- Right: Tajima Yellow -->
         <path d="M 12 12 L 18.36 5.64 A 9 9 0 0 1 18.36 18.36 Z" fill="#ffd000"/>
-        <!-- Bottom: 50% Neutral Grey -->
         <path d="M 12 12 L 18.36 18.36 A 9 9 0 0 1 5.64 18.36 Z" fill="#808080"/>
-        <!-- Left: Black -->
         <path d="M 12 12 L 5.64 18.36 A 9 9 0 0 1 5.64 5.64 Z" fill="#0f172a"/>
-
         <!-- Cohesive Outer Circle & Cross Lines -->
         <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
         <line x1="5.64" y1="5.64" x2="18.36" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -193,7 +214,7 @@
       </svg>
     </button>
 
-    <!-- 4. Card Sync (credit card in sleek black) -->
+    <!-- 4. Card Sync (credit card) -->
     <button id="btn-card" class="btn-circle" title="實體卡片校準">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect width="20" height="14" x="2" y="5" rx="2"/>
@@ -230,7 +251,7 @@
   </div>
 
   <!-- Manual Tuning Top Bar -->
-  <div id="tuning-bar" style="display: none; position: fixed; left: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 40; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; align-items: center; gap: 8px; color: #1e293b;">
+  <div id="tuning-bar" style="display: none; position: fixed; left: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 40; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); align-items: center; gap: 8px; color: #1e293b;">
     <span style="font-size: 12px; font-weight: 700; color: #334155;">比例</span>
     <button id="btn-ppi-minus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
     <input type="number" id="ppi-input" step="0.1" min="30" max="800" style="width: 72px; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 2px; color: #0f172a; outline: none;">
@@ -249,8 +270,8 @@
     <div class="modal-card">
       <div class="modal-close-corner" id="btn-card-close-x">✕</div>
       <div style="text-align: center; margin-bottom: 12px; padding-right: 20px;">
-        <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">💳 信用卡高度校準</div>
-        <p style="font-size: 12px; color: #475569; line-height: 1.4;">
+        <div id="card-modal-title" style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">💳 信用卡高度校準</div>
+        <p id="card-modal-instructions" style="font-size: 12px; color: #475569; line-height: 1.4;">
           將任何一張<strong style="color: #2563eb;">信用卡、八達通或健保卡</strong>貼在螢幕上，微調至高度完全吻合：
         </p>
       </div>
@@ -275,7 +296,7 @@
 
             <div style="flex: 1; width: 24px; position: relative; display: flex; align-items: center; justify-content: center;">
               <div style="position: absolute; top: 0; bottom: 0; width: 2.5px; background: #ef4444;"></div>
-              <div style="position: absolute; right: 28px; background: #dc2626; color: #fff; font-weight: bold; font-size: 11px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.35); letter-spacing: 0.5px;">
+              <div id="card-badge-text" style="position: absolute; right: 28px; background: #dc2626; color: #fff; font-weight: bold; font-size: 11px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.35); letter-spacing: 0.5px;">
                 對齊真實卡片高度
               </div>
             </div>
@@ -316,17 +337,17 @@
     </div>
   </div>
 
-  <!-- Information Modal -->
+  <!-- Information & Settings Modal -->
   <div id="modal-info" class="modal-overlay" style="display: none;">
     <div class="modal-card">
       <div class="modal-close-corner" id="btn-info-close-x">✕</div>
       <div style="display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; margin-bottom: 10px;">
-        <img src="./icon.png" width="28" height="28" style="border-radius: 6px;" alt="Icon">
-        <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;">方格紙量尺</h3>
+        <img id="info-modal-icon" src="./icon.png" width="28" height="28" style="border-radius: 6px;" alt="Icon">
+        <h3 id="info-modal-title" style="font-size: 16px; font-weight: 800; color: #0f172a;">方格紙量尺</h3>
       </div>
 
       <div style="font-size: 12px; color: #475569; line-height: 1.5; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-        <p>專為<strong style="color: #0f172a;">隨時測量物件</strong>設計。無需連網，支援全離線運作。</p>
+        <p id="info-modal-desc">專為<strong style="color: #0f172a;">隨時測量物件</strong>設計。無需連網，支援全離線運作。</p>
 
         <div style="background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
           <div>✓ <strong>實體卡片校準</strong>：以身邊的信用卡/八達通 1:1 高度吻合</div>
@@ -340,15 +361,35 @@
           <div>• <strong>iPhone Safari</strong>：點下方分享按鈕 ➔ 加入主畫面</div>
           <div>• <strong>Android Chrome</strong>：點右上三點選單 ➔ 安裝/加到主畫面</div>
         </div>
+
+        <!-- Bring Your Own Key (BYOK) Client-Side Settings -->
+        <div class="byok-container">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: 700; color: #0f172a;">🔑 Gemini API 金鑰 (BYOK)</span>
+            <span id="byok-status-pill" style="font-size: 10px; color: #64748b; background: #e2e8f0; padding: 1px 6px; border-radius: 4px;">未設定</span>
+          </div>
+          <p style="font-size: 10.5px; color: #64748b; margin-top: 4px; line-height: 1.35;">
+            遵循純客戶端自主（BYOK）模式，金鑰僅儲存在您的瀏覽器本地，絕不上傳後端。
+          </p>
+          <input type="password" id="byok-key-input" class="byok-input" placeholder="AIzaSy... (選填，無金鑰亦可完整離線測量)">
+          <div style="display: flex; gap: 6px; margin-top: 6px;">
+            <button id="btn-byok-save" style="flex: 1; padding: 6px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; font-size: 11px; cursor: pointer;">
+              儲存金鑰
+            </button>
+            <button id="btn-byok-clear" style="padding: 6px 10px; background: #f1f5f9; color: #dc2626; border: 1px solid #e2e8f0; border-radius: 6px; font-weight: 600; font-size: 11px; cursor: pointer;">
+              清除
+            </button>
+          </div>
+        </div>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid #f1f5f9;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b;">
-          <span>作者：Kitty Ng</span>
-          <span style="font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">v2.3 離線通用版</span>
+          <span id="info-modal-author">作者：Kitty Ng</span>
+          <span id="info-modal-version" style="font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">v2.3 離線通用版</span>
         </div>
 
-        <a href="mailto:kitty.waiying@gmail.com?subject=方格紙量尺問題與回報" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; color: #1e293b; text-decoration: none; font-size: 12px; font-weight: 600;">
+        <a id="info-modal-email-link" href="mailto:kitty.waiying@gmail.com?subject=方格紙量尺問題與回報" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; color: #1e293b; text-decoration: none; font-size: 12px; font-weight: 600;">
           ✉ 回報問題 / 聯絡作者
         </a>
 
@@ -368,7 +409,7 @@
     </div>
   </div>
 
-  <!-- 7. Donation / Support Modal -->
+  <!-- Donation / Support Modal (PayPal Only per Project Guideline) -->
   <div id="modal-donate" class="modal-overlay" style="display: none;">
     <div class="modal-card" style="max-width: 380px;">
       <div class="modal-close-corner" id="btn-donate-close-x">✕</div>
@@ -376,12 +417,12 @@
       <div style="display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; margin-bottom: 12px;">
         <span style="font-size: 20px;">💖</span>
         <div>
-          <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.2;">贊助支持作者</h3>
-          <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0;">Support the creator & continuous development</p>
+          <h3 id="donate-modal-title" style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.2;">贊助支持作者</h3>
+          <p id="donate-modal-subtitle" style="font-size: 11px; color: #64748b; margin: 2px 0 0 0;">Support the creator & continuous development</p>
         </div>
       </div>
 
-      <p style="font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 12px;">
+      <p id="donate-modal-message" style="font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 12px;">
         感謝您對「方格紙量尺」的喜愛！如果本工具為您帶來便利，歡迎透過 PayPal 自由贊助支持作者持續維護與優化：
       </p>
 
@@ -396,8 +437,8 @@
         <div id="donate-qr-desc" style="margin-top: 2px; font-size: 11px; color: #64748b; text-align: center;">
           請使用手機相機或 PayPal App 掃描 QR Code
         </div>
-        <a href="https://www.paypal.com/qrcodes/managed/16d4009f-428d-4b45-bcf6-bb7af15d9449?utm_source=consweb_more" target="_blank" rel="noopener noreferrer" style="margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #eff6ff; color: #0070ba; font-size: 12px; font-weight: 600; text-decoration: none; border-radius: 8px; border: 1px solid #bfdbfe;">
-          <span>直接開啟 PayPal 付款連結 ↗</span>
+        <a id="donate-direct-link" href="https://www.paypal.com/qrcodes/managed/16d4009f-428d-4b45-bcf6-bb7af15d9449?utm_source=consweb_more" target="_blank" rel="noopener noreferrer" style="margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #eff6ff; color: #0070ba; font-size: 12px; font-weight: 600; text-decoration: none; border-radius: 8px; border: 1px solid #bfdbfe;">
+          <span id="donate-direct-text">直接開啟 PayPal 付款連結 ↗</span>
         </a>
       </div>
 
@@ -414,55 +455,191 @@
   </div>
 
   <script>
-    // --- Application Constants & Types ---
-    const CARD_HEIGHT_CM = 5.398; // ISO ID-1 card short edge standard (53.98mm)
-    const THEMES = [
-      { id: 'white', name: '白色', bg: '#ffffff', minor: '#e2e8f0', major: '#cbd5e1', axis: '#0f172a', text: '#0f172a', guide: '#dc2626' },
-      { id: 'yellow', name: '捲尺黃', bg: '#ffd000', minor: '#dfb500', major: '#b88e00', axis: '#000000', text: '#000000', guide: '#dc2626' },
-      { id: 'grey', name: '50% 灰', bg: '#808080', minor: '#919191', major: '#5a5a5a', axis: '#ffffff', text: '#ffffff', guide: '#ef4444' },
-      { id: 'black', name: '深黑', bg: '#09090b', minor: '#27272a', major: '#3f3f46', axis: '#38bdf8', text: '#ffffff', guide: '#f87171' }
-    ];
+    /**
+     * =========================================================================
+     * SINGLE SOURCE OF TRUTH (CONFIG)
+     * =========================================================================
+     * Centralized configuration for all text, version numbers, URLs, assets,
+     * physical constants, and local storage keys across the entire web app.
+     */
+    const CONFIG = {
+      appName: "方格紙量尺",
+      version: "v2.3 離線通用版",
+      description: "專為隨身物件測量設計。無需連網，支援全離線運作。",
+      author: "Kitty Ng",
+      contactEmail: "kitty.waiying@gmail.com",
+      emailSubject: "方格紙量尺 - 問題回報與聯絡",
+      // PayPal donation link strictly per Project Guidelines in AGENTS.md
+      paypalUrl: "https://www.paypal.com/qrcodes/managed/16d4009f-428d-4b45-bcf6-bb7af15d9449?utm_source=consweb_more",
+      paypalQrImage: "./assets/donate/paypal.jpg",
+      appIcon: "./icon.png",
+      // ISO/IEC 7810 ID-1 card short-edge standard (53.98mm = 5.398cm)
+      cardStandardHeightCm: 5.398,
+      // LocalStorage Key Constants (Zero hardcoded secrets, Bring Your Own Key BYOK)
+      storageKeys: {
+        ppi: "calibrated_ppi",
+        unit: "ruler_unit",
+        theme: "ruler_bg_index",
+        apiKey: "GEMINI_API_KEY"
+      },
+      // Theme Palette Definitions
+      themes: [
+        { id: 'white', name: '白色', bg: '#ffffff', minor: '#e2e8f0', major: '#cbd5e1', axis: '#0f172a', text: '#0f172a', guide: '#dc2626' },
+        { id: 'yellow', name: '捲尺黃', bg: '#ffd000', minor: '#dfb500', major: '#b88e00', axis: '#000000', text: '#000000', guide: '#dc2626' },
+        { id: 'grey', name: '50% 灰', bg: '#808080', minor: '#919191', major: '#5a5a5a', axis: '#ffffff', text: '#ffffff', guide: '#ef4444' },
+        { id: 'black', name: '深黑', bg: '#09090b', minor: '#27272a', major: '#3f3f46', axis: '#38bdf8', text: '#ffffff', guide: '#f87171' }
+      ],
+      defaultPpiByDevice: {
+        ipad: 132,
+        iphone: 163,
+        android: 160,
+        desktop: 96
+      },
+      ppiLimits: {
+        min: 30,
+        max: 800,
+        stepSmall: 0.1,
+        stepMedium: 0.5,
+        stepCard: 1.5
+      }
+    };
 
-    function getEstimatePpi() {
+    // --- State Initialization ---
+    function estimateInitialPpi() {
       const ua = navigator.userAgent || '';
-      if (/iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 132;
-      if (/iPhone|iPod/i.test(ua)) return 163;
-      if (/Android/i.test(ua)) return 160;
-      return 96;
+      if (/iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+        return CONFIG.defaultPpiByDevice.ipad;
+      }
+      if (/iPhone|iPod/i.test(ua)) {
+        return CONFIG.defaultPpiByDevice.iphone;
+      }
+      if (/Android/i.test(ua)) {
+        return CONFIG.defaultPpiByDevice.android;
+      }
+      return CONFIG.defaultPpiByDevice.desktop;
     }
 
-    const defaultPpi = getEstimatePpi();
-    let ppi = parseFloat(localStorage.getItem('calibrated_ppi')) || defaultPpi;
-    let unit = localStorage.getItem('ruler_unit') === 'in' ? 'in' : 'cm';
-    let themeIndex = parseInt(localStorage.getItem('ruler_bg_index') || '0', 10) % THEMES.length;
+    const defaultPpi = estimateInitialPpi();
+    let ppi = parseFloat(localStorage.getItem(CONFIG.storageKeys.ppi)) || defaultPpi;
+    let unit = localStorage.getItem(CONFIG.storageKeys.unit) === 'in' ? 'in' : 'cm';
+    let themeIndex = parseInt(localStorage.getItem(CONFIG.storageKeys.theme) || '0', 10) % CONFIG.themes.length;
     let showGuides = false;
     let guideX = 140;
     let guideY = 140;
     let isDragging = false;
     let isCollapsed = false;
 
-    // Origin position constants
+    // Origin coordinate constants
     const originX = 36;
     function getOriginY(h) { return h - 36; }
 
     const canvas = document.getElementById('ruler-canvas');
     const ctx = canvas.getContext('2d');
 
+    // --- Synchronize Dynamic UI with CONFIG Single Source of Truth ---
+    function applyConfigToDOM() {
+      document.title = CONFIG.appName;
+      
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.content = CONFIG.description;
+      
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.content = CONFIG.appName;
+      
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.content = CONFIG.description;
+
+      // Info Modal Hydration
+      const infoTitle = document.getElementById('info-modal-title');
+      if (infoTitle) infoTitle.textContent = CONFIG.appName;
+
+      const infoDesc = document.getElementById('info-modal-desc');
+      if (infoDesc) infoDesc.innerHTML = `專為<strong style="color: #0f172a;">隨時測量物件</strong>設計。無需連網，支援全離線運作。`;
+
+      const infoAuthor = document.getElementById('info-modal-author');
+      if (infoAuthor) infoAuthor.textContent = `作者：${CONFIG.author}`;
+
+      const infoVersion = document.getElementById('info-modal-version');
+      if (infoVersion) infoVersion.textContent = CONFIG.version;
+
+      const emailLink = document.getElementById('info-modal-email-link');
+      if (emailLink) {
+        emailLink.href = `mailto:${CONFIG.contactEmail}?subject=${encodeURIComponent(CONFIG.emailSubject)}`;
+      }
+
+      const infoIcon = document.getElementById('info-modal-icon');
+      if (infoIcon) infoIcon.src = CONFIG.appIcon;
+
+      // Donate Modal Hydration
+      const donateQr = document.getElementById('donate-qr-img');
+      if (donateQr) donateQr.src = CONFIG.paypalQrImage;
+
+      const donateLink = document.getElementById('donate-direct-link');
+      if (donateLink) donateLink.href = CONFIG.paypalUrl;
+
+      // BYOK API Key UI State
+      updateByokUiState();
+    }
+
+    // --- Bring Your Own Key (BYOK) Security Manager ---
+    function getSavedApiKey() {
+      return localStorage.getItem(CONFIG.storageKeys.apiKey) || "";
+    }
+
+    function saveApiKey(key) {
+      const cleanKey = (key || "").trim();
+      if (cleanKey) {
+        localStorage.setItem(CONFIG.storageKeys.apiKey, cleanKey);
+      } else {
+        localStorage.removeItem(CONFIG.storageKeys.apiKey);
+      }
+      updateByokUiState();
+    }
+
+    function clearApiKey() {
+      localStorage.removeItem(CONFIG.storageKeys.apiKey);
+      const input = document.getElementById('byok-key-input');
+      if (input) input.value = "";
+      updateByokUiState();
+    }
+
+    function updateByokUiState() {
+      const key = getSavedApiKey();
+      const pill = document.getElementById('byok-status-pill');
+      const input = document.getElementById('byok-key-input');
+      if (pill) {
+        if (key) {
+          pill.textContent = "已儲存 ✓";
+          pill.style.background = "#dcfce7";
+          pill.style.color = "#15803d";
+        } else {
+          pill.textContent = "未設定 (純離線)";
+          pill.style.background = "#f1f5f9";
+          pill.style.color = "#64748b";
+        }
+      }
+      if (input && key && !input.value) {
+        input.placeholder = `已安全保存在本地 (${key.substring(0, 6)}...${key.substring(key.length - 4)})`;
+      }
+    }
+
+    // --- Persistence Functions ---
     function saveSettings() {
-      localStorage.setItem('calibrated_ppi', String(ppi));
-      localStorage.setItem('ruler_unit', unit);
-      localStorage.setItem('ruler_bg_index', String(themeIndex));
+      localStorage.setItem(CONFIG.storageKeys.ppi, String(ppi));
+      localStorage.setItem(CONFIG.storageKeys.unit, unit);
+      localStorage.setItem(CONFIG.storageKeys.theme, String(themeIndex));
     }
 
     function updateCardPreview() {
       const pixelsPerCm = ppi / 2.54;
-      const heightPx = Math.round(pixelsPerCm * CARD_HEIGHT_CM);
+      const heightPx = Math.round(pixelsPerCm * CONFIG.cardStandardHeightCm);
       const previewCard = document.getElementById('preview-card');
       if (previewCard) {
         previewCard.style.height = heightPx + 'px';
       }
     }
 
+    // --- Canvas Ruler Render Engine ---
     function render() {
       const rect = canvas.getBoundingClientRect();
       const width = Math.round(rect.width || window.innerWidth);
@@ -481,7 +658,7 @@
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
 
-      const theme = THEMES[themeIndex];
+      const theme = CONFIG.themes[themeIndex];
       document.body.style.backgroundColor = theme.bg;
 
       // 1. Canvas Background
@@ -535,7 +712,7 @@
       ctx.fillStyle = theme.text;
       ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
-      // X Axis
+      // X Axis Ticks
       ctx.textAlign = 'center';
       let countX = 0;
       for (let x = originX; x < width; x += pixelsPerUnit) {
@@ -573,7 +750,7 @@
         countX++;
       }
 
-      // Y Axis
+      // Y Axis Ticks
       ctx.textAlign = 'right';
       let countY = 0;
       for (let y = originY; y > 0; y -= pixelsPerUnit) {
@@ -698,7 +875,7 @@
       ctx.restore();
     }
 
-    // --- Interactive Touch & Mouse Handling for Ruler Crosshairs ---
+    // --- Interactive Pointer Gestures (Touch & Mouse) ---
     function getPointerPos(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
@@ -803,7 +980,7 @@
     // 3. Color Theme Cycle
     const btnColor = document.getElementById('btn-color');
     btnColor.addEventListener('click', () => {
-      themeIndex = (themeIndex + 1) % THEMES.length;
+      themeIndex = (themeIndex + 1) % CONFIG.themes.length;
       saveSettings();
       render();
     });
@@ -823,12 +1000,12 @@
       render();
     });
     document.getElementById('btn-card-shrink').addEventListener('click', () => {
-      ppi = Math.max(40, Math.min(600, +(ppi - 1.5).toFixed(1)));
+      ppi = Math.max(CONFIG.ppiLimits.min, Math.min(CONFIG.ppiLimits.max, +(ppi - CONFIG.ppiLimits.stepCard).toFixed(1)));
       updateCardPreview();
       render();
     });
     document.getElementById('btn-card-grow').addEventListener('click', () => {
-      ppi = Math.max(40, Math.min(600, +(ppi + 1.5).toFixed(1)));
+      ppi = Math.max(CONFIG.ppiLimits.min, Math.min(CONFIG.ppiLimits.max, +(ppi + CONFIG.ppiLimits.stepCard).toFixed(1)));
       updateCardPreview();
       render();
     });
@@ -854,13 +1031,13 @@
       }
     });
     document.getElementById('btn-ppi-minus').addEventListener('click', () => {
-      ppi = Math.max(30, Math.min(800, +(ppi - 0.5).toFixed(1)));
+      ppi = Math.max(CONFIG.ppiLimits.min, Math.min(CONFIG.ppiLimits.max, +(ppi - CONFIG.ppiLimits.stepMedium).toFixed(1)));
       ppiInput.value = ppi.toFixed(1);
       saveSettings();
       render();
     });
     document.getElementById('btn-ppi-plus').addEventListener('click', () => {
-      ppi = Math.max(30, Math.min(800, +(ppi + 0.5).toFixed(1)));
+      ppi = Math.max(CONFIG.ppiLimits.min, Math.min(CONFIG.ppiLimits.max, +(ppi + CONFIG.ppiLimits.stepMedium).toFixed(1)));
       ppiInput.value = ppi.toFixed(1);
       saveSettings();
       render();
@@ -873,45 +1050,51 @@
     });
     ppiInput.addEventListener('change', () => {
       const val = parseFloat(ppiInput.value);
-      if (!isNaN(val) && val >= 30 && val <= 800) {
+      if (!isNaN(val) && val >= CONFIG.ppiLimits.min && val <= CONFIG.ppiLimits.max) {
         ppi = val;
         saveSettings();
         render();
       }
     });
 
-    // 6. Information Modal & Donation Modal
+    // 6. Information Modal & BYOK Settings
     const btnInfo = document.getElementById('btn-info');
     const modalInfo = document.getElementById('modal-info');
     const modalDonate = document.getElementById('modal-donate');
     const btnOpenDonate = document.getElementById('btn-open-donate');
-    const donateQrImg = document.getElementById('donate-qr-img');
-    const donateQrTitle = document.getElementById('donate-qr-title');
-    const donateQrDesc = document.getElementById('donate-qr-desc');
 
-    btnInfo.addEventListener('click', () => modalInfo.style.display = 'flex');
+    btnInfo.addEventListener('click', () => {
+      modalInfo.style.display = 'flex';
+      updateByokUiState();
+    });
     document.getElementById('btn-info-close-x').addEventListener('click', () => modalInfo.style.display = 'none');
     document.getElementById('btn-info-close').addEventListener('click', () => modalInfo.style.display = 'none');
 
-    // Donation Modal Events
-    // Open donate modal
+    // BYOK Key handlers
+    document.getElementById('btn-byok-save').addEventListener('click', () => {
+      const input = document.getElementById('byok-key-input');
+      if (input) {
+        saveApiKey(input.value);
+        input.value = "";
+      }
+    });
+    document.getElementById('btn-byok-clear').addEventListener('click', () => {
+      clearApiKey();
+    });
+
+    // 7. Donation Modal Events (PayPal only per project rules)
     btnOpenDonate.addEventListener('click', () => {
       modalInfo.style.display = 'none';
       modalDonate.style.display = 'flex';
-      donateQrImg.src = './assets/donate/paypal.jpg';
     });
-
-    // Close donate modal
     document.getElementById('btn-donate-close-x').addEventListener('click', () => modalDonate.style.display = 'none');
     document.getElementById('btn-donate-close').addEventListener('click', () => modalDonate.style.display = 'none');
-    
-    // Back to Info modal
     document.getElementById('btn-donate-back-info').addEventListener('click', () => {
       modalDonate.style.display = 'none';
       modalInfo.style.display = 'flex';
     });
 
-    // 7. Collapse / Expand Toolbar
+    // 8. Collapse / Expand Toolbar
     const btnCollapse = document.getElementById('btn-collapse');
     const collapseIcon = document.getElementById('collapse-icon');
     const toolbarButtons = [btnUnit, btnGuide, btnColor, btnCard, btnTune, btnInfo];
@@ -934,7 +1117,8 @@
       });
     }
 
-    // Initial setup & render
+    // Initial Hydration & First Render
+    applyConfigToDOM();
     unitText.innerText = unit === 'cm' ? 'in/cm' : 'cm/in';
     render();
   </script>
