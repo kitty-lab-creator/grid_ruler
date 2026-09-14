@@ -258,8 +258,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.stroke();
 
       // Live measurement values
-      const valX = (guideX / pixelsPerUnit).toFixed(2);
-      const valY = (guideY / pixelsPerUnit).toFixed(2);
+      const valX = (guideX / pixelsPerUnit).toFixed(1);
+      const valY = (guideY / pixelsPerUnit).toFixed(1);
       const lockSuffix = isPositionLocked ? ' 🔒' : isRatioLocked ? ' 🔗' : '';
       const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}${lockSuffix}`;
 
