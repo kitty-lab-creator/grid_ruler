@@ -14,43 +14,6 @@ interface RulerCanvasProps {
   lockedRatio?: number | null;
 }
 
-// Helper to detect safe area insets
-const getSafeAreaInsets = () => {
-  if (typeof document === 'undefined') return { top: 0, right: 0, bottom: 0, left: 0 };
-  let probe = document.getElementById('safe-area-probe-react');
-  if (!probe) {
-    probe = document.createElement('div');
-    probe.id = 'safe-area-probe-react';
-    probe.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;visibility:hidden;z-index:-9999;' +
-      'padding-top:env(safe-area-inset-top, 0px);' +
-      'padding-right:env(safe-area-inset-right, 0px);' +
-      'padding-bottom:env(safe-area-inset-bottom, 0px);' +
-      'padding-left:env(safe-area-inset-left, 0px);';
-    document.body.appendChild(probe);
-  }
-  const cs = window.getComputedStyle(probe);
-  return {
-    top: parseFloat(cs.paddingTop) || 0,
-    right: parseFloat(cs.paddingRight) || 0,
-    bottom: parseFloat(cs.paddingBottom) || 0,
-    left: parseFloat(cs.paddingLeft) || 0,
-  };
-};
-
-// Measure exact visible viewport (accounts for mobile browser address bar and bottom toolbar)
-const getViewportDimensions = () => {
-  let width = window.innerWidth;
-  let height = window.innerHeight;
-  if (window.visualViewport) {
-    width = Math.round(window.visualViewport.width);
-    height = Math.round(window.visualViewport.height);
-  }
-  return {
-    width: Math.max(width, 200),
-    height: Math.max(height, 150),
-  };
-};
-
 export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   ppi,
   unit,
@@ -67,9 +30,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   const draggingRef = useRef<'x' | 'y' | 'both' | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Origin offset constants dynamically adapting to safe area and visible viewport
-  const getOriginX = () => 36 + getSafeAreaInsets().left;
-  const getOriginY = (height: number) => height - 36 - getSafeAreaInsets().bottom;
+  // Origin offset constants
+  const originX = 36;
+  const getOriginY = (height: number) => height - 36;
 
   // Measure and render
   const draw = useCallback(() => {
@@ -78,9 +41,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const { width, height } = getViewportDimensions();
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
 
     const dpr = window.devicePixelRatio || 1;
 
@@ -97,7 +60,6 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     ctx.fillStyle = colorScheme.canvasBg;
     ctx.fillRect(0, 0, width, height);
 
-    const originX = getOriginX();
     const originY = getOriginY(height);
 
     // Scale calculation
@@ -353,21 +315,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       draw();
       setTimeout(draw, 100);
       setTimeout(draw, 300);
-      setTimeout(draw, 600);
     };
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-      window.visualViewport.addEventListener('scroll', handleResize);
-    }
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize);
-        window.visualViewport.removeEventListener('scroll', handleResize);
-      }
     };
   }, [draw]);
 
@@ -389,9 +342,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     const pos = getCanvasPos(e);
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const { height } = getViewportDimensions();
-    const originY = getOriginY(height);
-    const originX = getOriginX();
+    const rect = canvas.getBoundingClientRect();
+    const originY = getOriginY(rect.height);
 
     const currentX = originX + guideX;
     const currentY = originY - guideY;
@@ -431,9 +383,8 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       const pos = getCanvasPos(e);
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const { height } = getViewportDimensions();
-      const originY = getOriginY(height);
-      const originX = getOriginX();
+      const rect = canvas.getBoundingClientRect();
+      const originY = getOriginY(rect.height);
 
       let newX = guideX;
       let newY = guideY;
@@ -488,7 +439,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     <canvas
       ref={canvasRef}
       id="ruler-canvas"
-      className={`fixed inset-0 block w-full h-full touch-none select-none ${
+      className={`absolute inset-0 block w-full h-full touch-none select-none ${
         isPositionLocked ? 'cursor-default' : 'cursor-crosshair'
       }`}
       onTouchStart={handlePointerDown}

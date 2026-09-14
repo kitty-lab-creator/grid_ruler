@@ -126,7 +126,7 @@ export default function App() {
 
   return (
     <div
-      className="fixed inset-0 w-full h-full overflow-hidden select-none touch-none"
+      className="relative w-full min-h-screen h-full overflow-hidden select-none touch-none"
       style={{ backgroundColor: currentColor.bgColor }}
     >
       {/* Background Interactive Ruler Canvas */}
