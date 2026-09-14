@@ -130,7 +130,8 @@
       max-width: calc(100vw - 78px);
     }
     /* Landscape Mode & Short Screen Height Adaptation (Scheme 1: Top-Right Horizontal Dock) */
-    @media (orientation: landscape), (max-height: 520px) {
+    /* Must strictly require BOTH orientation: landscape AND small screen height so portrait mode never triggers horizontal */
+    @media (orientation: landscape) and (max-height: 560px) {
       #right-toolbar {
         flex-direction: row;
         gap: 6px;
