@@ -1,11 +1,11 @@
 import React from 'react';
 import { Ruler, CreditCard, Sliders, ChevronUp, ChevronDown } from 'lucide-react';
-import { Unit } from '../types';
+import { Unit, GuideMode } from '../types';
 
 interface RightToolbarProps {
   unit: Unit;
   onToggleUnit: () => void;
-  showGuides: boolean;
+  guideMode: GuideMode;
   onToggleGuides: () => void;
   onCycleBgColor: () => void;
   onOpenCardSync: () => void;
@@ -19,7 +19,7 @@ interface RightToolbarProps {
 export const RightToolbar: React.FC<RightToolbarProps> = ({
   unit,
   onToggleUnit,
-  showGuides,
+  guideMode,
   onToggleGuides,
   onCycleBgColor,
   onOpenCardSync,
@@ -69,17 +69,25 @@ export const RightToolbar: React.FC<RightToolbarProps> = ({
         </span>
       </button>
 
-      {/* 2. Reference Line toggle: Ruler icon, becomes red when active */}
+      {/* 2. Reference Line toggle: 3-mode switch (all -> lines -> off) */}
       <button
         id="btn-reference-line"
         onClick={onToggleGuides}
         className={`w-11 h-11 rounded-full border shadow-md flex items-center justify-center active:scale-90 transition-all cursor-pointer ${
-          showGuides
+          guideMode === 'all'
             ? 'bg-red-600 text-white border-red-700 shadow-red-500/35'
+            : guideMode === 'lines'
+            ? 'bg-red-600 text-white border-red-700 shadow-red-500/35 ring-2 ring-white ring-offset-2 ring-offset-red-500'
             : 'bg-white/95 text-slate-700 border-slate-300 hover:bg-slate-50'
         }`}
-        title="參考線開關"
-        aria-label="參考線開關"
+        title={
+          guideMode === 'all'
+            ? '參考線與控制列 (點擊隱藏控制列，僅保留標線)'
+            : guideMode === 'lines'
+            ? '僅顯示參考線 (點擊完全關閉)'
+            : '開啟參考線與控制列'
+        }
+        aria-label="參考線模式切換"
       >
         <Ruler className="w-5 h-5 stroke-[2]" />
       </button>

@@ -76,6 +76,9 @@
       border-color: #b91c1c !important;
       box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
     }
+    .btn-circle.active-lines-only {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #dc2626, 0 4px 12px rgba(220, 38, 38, 0.35) !important;
+    }
     .btn-circle.active-blue {
       background: #2563eb !important;
       color: #ffffff !important;
@@ -227,15 +230,15 @@
   <!-- Top Left Floating Bars Container: PPI Manual Tuning & Reference Line Control -->
   <div id="top-bars-container" style="position: fixed; left: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 40; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; pointer-events: none; max-width: calc(100vw - 78px);">
 
-    <!-- 1. Manual Tuning Top Bar -->
-    <div id="tuning-bar" style="display: none; pointer-events: auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); align-items: center; gap: 8px; color: #1e293b; max-width: 100%; overflow-x: auto;">
-      <span style="font-size: 12px; font-weight: 700; color: #334155;">比例</span>
-      <button id="btn-ppi-minus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-      <input type="number" id="ppi-input" step="0.1" min="30" max="800" style="width: 72px; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 2px; color: #0f172a; outline: none;">
-      <span style="font-size: 11px; font-weight: 600; color: #64748b;">PPI</span>
-      <button id="btn-ppi-plus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000000;">+</button>
-      <button id="btn-ppi-reset" title="重設預設值" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 1. Manual Tuning Top Bar (Styled coherently with Reference Line Control Box) -->
+    <div id="tuning-bar" style="display: none; pointer-events: auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 4px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); align-items: center; gap: 4px; color: #1e293b; max-width: 100%;">
+      <span style="font-size: 11px; font-weight: 700; color: #0f172a; white-space: nowrap;">比例</span>
+      <button id="btn-ppi-minus" title="縮小 0.5 PPI" style="width: 26px; height: 26px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1e293b; flex-shrink: 0; padding: 0;">−</button>
+      <input type="number" id="ppi-input" inputmode="decimal" step="0.1" min="30" max="800" style="width: 48px; text-align: center; font-weight: 700; font-family: monospace; font-size: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 2px 1px; color: #0f172a; outline: none;" title="手動輸入 PPI 比例" aria-label="PPI 比例">
+      <span style="font-size: 10px; font-weight: 600; color: #64748b; margin-right: 2px;">PPI</span>
+      <button id="btn-ppi-plus" title="放大 0.5 PPI" style="width: 26px; height: 26px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1e293b; flex-shrink: 0; padding: 0;">+</button>
+      <button id="btn-ppi-reset" title="重設預設值" style="width: 26px; height: 26px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; color: #1e293b;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
           <polyline points="3 3 3 8 8 8"/>
         </svg>
@@ -512,6 +515,7 @@
     let ppi = parseFloat(localStorage.getItem(CONFIG.storageKeys.ppi)) || defaultPpi;
     let unit = localStorage.getItem(CONFIG.storageKeys.unit) === 'in' ? 'in' : 'cm';
     let themeIndex = parseInt(localStorage.getItem(CONFIG.storageKeys.theme) || '0', 10) % CONFIG.themes.length;
+    let guideMode = 0; // 0: off, 1: both box and lines, 2: lines only (box hidden)
     let showGuides = false;
     let guideX = 140;
     let guideY = 140;
@@ -947,17 +951,32 @@
       render();
     });
 
-    // 2. Reference Line Toggle
+    // 2. Reference Line Toggle (3-mode cycle: Both -> Lines only -> Off)
     const btnGuide = document.getElementById('btn-guide');
     const guideControlBar = document.getElementById('guide-control-bar');
     btnGuide.addEventListener('click', () => {
-      showGuides = !showGuides;
-      if (showGuides) {
+      guideMode = (guideMode + 1) % 3;
+      if (guideMode === 1) {
+        // Mode 1: show both XY control box and red lines
+        showGuides = true;
         btnGuide.classList.add('active-red');
+        btnGuide.classList.remove('active-lines-only');
+        btnGuide.title = '參考線與控制列 (點擊隱藏控制列，保留標線)';
         if (guideControlBar) guideControlBar.style.display = 'flex';
         updateGuideInputs();
+      } else if (guideMode === 2) {
+        // Mode 2: hide XY control box only, still show red lines
+        showGuides = true;
+        btnGuide.classList.add('active-red');
+        btnGuide.classList.add('active-lines-only');
+        btnGuide.title = '僅顯示參考線 (點擊完全關閉)';
+        if (guideControlBar) guideControlBar.style.display = 'none';
       } else {
+        // Mode 0: hide both control box and red lines
+        showGuides = false;
         btnGuide.classList.remove('active-red');
+        btnGuide.classList.remove('active-lines-only');
+        btnGuide.title = '開啟參考線與控制列';
         if (guideControlBar) guideControlBar.style.display = 'none';
       }
       render();
@@ -1173,6 +1192,23 @@
       ppiInput.value = ppi.toFixed(1);
       saveSettings();
       render();
+    });
+    ppiInput.addEventListener('focus', (e) => {
+      e.target.value = '';
+    });
+    ppiInput.addEventListener('click', (e) => {
+      if (e.target.value !== '') e.target.value = '';
+    });
+    ppiInput.addEventListener('blur', () => {
+      const val = parseFloat(ppiInput.value);
+      if (isNaN(val) || val < CONFIG.ppiLimits.min || val > CONFIG.ppiLimits.max) {
+        ppiInput.value = ppi.toFixed(1);
+      } else {
+        ppi = val;
+        ppiInput.value = ppi.toFixed(1);
+        saveSettings();
+        render();
+      }
     });
     ppiInput.addEventListener('change', () => {
       const val = parseFloat(ppiInput.value);

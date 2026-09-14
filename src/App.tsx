@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Unit, BG_COLOR_OPTIONS } from './types';
+import { Unit, BG_COLOR_OPTIONS, GuideMode } from './types';
 import { RulerCanvas } from './components/RulerCanvas';
 import { RightToolbar } from './components/RightToolbar';
 import { ManualTuningBar } from './components/ManualTuningBar';
@@ -39,8 +39,8 @@ export default function App() {
     return saved !== null ? parseInt(saved, 10) % BG_COLOR_OPTIONS.length : 0;
   });
 
-  // Reference lines: default OFF
-  const [showGuides, setShowGuides] = useState<boolean>(false);
+  // Reference lines: 3-mode ('off' -> 'all' [box+lines] -> 'lines' [lines only] -> 'off')
+  const [guideMode, setGuideMode] = useState<GuideMode>('off');
   const [guideX, setGuideX] = useState<number>(140);
   const [guideY, setGuideY] = useState<number>(140);
   const [isPositionLocked, setIsPositionLocked] = useState<boolean>(false);
@@ -77,7 +77,11 @@ export default function App() {
   }, []);
 
   const handleToggleGuides = useCallback(() => {
-    setShowGuides((prev) => !prev);
+    setGuideMode((prev) => {
+      if (prev === 'off') return 'all';
+      if (prev === 'all') return 'lines';
+      return 'off';
+    });
   }, []);
 
   const handleToggleRatioLock = useCallback(() => {
@@ -109,6 +113,9 @@ export default function App() {
   }, []);
 
   const currentColor = BG_COLOR_OPTIONS[bgIndex] || BG_COLOR_OPTIONS[0];
+
+  const showGuides = guideMode !== 'off';
+  const showGuideControlBar = guideMode === 'all';
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -153,7 +160,7 @@ export default function App() {
           />
         )}
 
-        {showGuides && (
+        {showGuideControlBar && (
           <ReferenceLineBar
             unit={unit}
             ppi={ppi}
@@ -176,7 +183,7 @@ export default function App() {
       <RightToolbar
         unit={unit}
         onToggleUnit={handleUnitToggle}
-        showGuides={showGuides}
+        guideMode={guideMode}
         onToggleGuides={handleToggleGuides}
         onCycleBgColor={handleCycleBgColor}
         onOpenCardSync={() => setIsCardSyncOpen(true)}

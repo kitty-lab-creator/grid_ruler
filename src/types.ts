@@ -1,4 +1,5 @@
 export type Unit = 'cm' | 'in';
+export type GuideMode = 'off' | 'all' | 'lines';
 
 export interface BgColorOption {
   id: string;
