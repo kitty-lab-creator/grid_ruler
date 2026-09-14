@@ -40,7 +40,7 @@
       background-color: #ffffff;
     }
     #ruler-canvas {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -585,9 +585,51 @@
     let isGuideRatioLocked = false;
     let lockedGuideRatio = null;
 
-    // Origin coordinate constants
-    const originX = 36;
-    function getOriginY(h) { return h - 36; }
+    // Safe Area Insets Probe (adapts dynamically to iPhone notches & home indicators)
+    const safeArea = { top: 0, right: 0, bottom: 0, left: 0 };
+    const safeAreaProbe = document.createElement('div');
+    safeAreaProbe.id = 'safe-area-probe';
+    safeAreaProbe.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;visibility:hidden;z-index:-9999;' +
+      'padding-top:env(safe-area-inset-top, 0px);' +
+      'padding-right:env(safe-area-inset-right, 0px);' +
+      'padding-bottom:env(safe-area-inset-bottom, 0px);' +
+      'padding-left:env(safe-area-inset-left, 0px);';
+    document.body.appendChild(safeAreaProbe);
+
+    function updateSafeAreaInsets() {
+      if (!safeAreaProbe) return;
+      const cs = window.getComputedStyle(safeAreaProbe);
+      safeArea.top = parseFloat(cs.paddingTop) || 0;
+      safeArea.right = parseFloat(cs.paddingRight) || 0;
+      safeArea.bottom = parseFloat(cs.paddingBottom) || 0;
+      safeArea.left = parseFloat(cs.paddingLeft) || 0;
+    }
+
+    // Origin coordinate helpers (dynamically adapting to safe area insets & visual viewport)
+    let originX = 36;
+    function updateOriginX() {
+      originX = 36 + safeArea.left;
+      return originX;
+    }
+    function getOriginY(h) {
+      return h - 36 - safeArea.bottom;
+    }
+
+    // Measure exact visible viewport (accounts for mobile browser address bar and bottom toolbar)
+    function getViewportDimensions() {
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+
+      if (window.visualViewport) {
+        width = Math.round(window.visualViewport.width);
+        height = Math.round(window.visualViewport.height);
+      }
+
+      return {
+        width: Math.max(width, 200),
+        height: Math.max(height, 150)
+      };
+    }
 
     const canvas = document.getElementById('ruler-canvas');
     const ctx = canvas.getContext('2d');
@@ -671,11 +713,16 @@
 
     // --- Canvas Ruler Render Engine ---
     function render() {
-      const rect = canvas.getBoundingClientRect();
-      const width = Math.round(rect.width || window.innerWidth);
-      const height = Math.round(rect.height || window.innerHeight);
-      const dpr = window.devicePixelRatio || 1;
+      updateSafeAreaInsets();
+      updateOriginX();
 
+      const { width, height } = getViewportDimensions();
+
+      // Ensure canvas element dimensions strictly match the visible viewport
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+
+      const dpr = window.devicePixelRatio || 1;
       const targetW = Math.round(width * dpr);
       const targetH = Math.round(height * dpr);
 
@@ -922,7 +969,8 @@
     function handleStart(e) {
       if (!showGuides || isGuidePositionLocked) return;
       const pos = getPointerPos(e);
-      const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
+      const { height } = getViewportDimensions();
+      const originY = getOriginY(height);
       const curX = originX + guideX;
       const curY = originY - guideY;
 
@@ -951,7 +999,8 @@
       if (!dragMode || !showGuides || isGuidePositionLocked) return;
       if (e.cancelable) e.preventDefault();
       const pos = getPointerPos(e);
-      const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
+      const { height } = getViewportDimensions();
+      const originY = getOriginY(height);
 
       if (isGuideRatioLocked && lockedGuideRatio && lockedGuideRatio > 0.0001) {
         if (dragMode === 'x' || dragMode === 'both') {
@@ -992,12 +1041,14 @@
       render();
       setTimeout(render, 100);
       setTimeout(render, 300);
+      setTimeout(render, 600);
     }
     window.addEventListener('resize', handleWindowResize);
-    window.addEventListener('orientationchange', () => {
-      setTimeout(render, 100);
-      setTimeout(render, 300);
-    });
+    window.addEventListener('orientationchange', handleWindowResize);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleWindowResize);
+      window.visualViewport.addEventListener('scroll', handleWindowResize);
+    }
 
     // --- UI Controls Event Listeners ---
     // 1. Unit Toggle
