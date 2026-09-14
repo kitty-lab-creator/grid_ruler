@@ -148,11 +148,8 @@ export default function App() {
 
       {/* Top Left Floating Bars Container: PPI Manual Tuning & Reference Line Control */}
       <div
-        className="fixed z-40 flex flex-col items-start gap-2 pointer-events-none max-w-[calc(100vw-72px)] landscape:max-w-[calc(100vw-340px)] max-h-[520px]:max-w-[calc(100vw-340px)]"
-        style={{
-          left: 'calc(14px + env(safe-area-inset-left, 0px))',
-          top: 'calc(10px + env(safe-area-inset-top, 0px))',
-        }}
+        className="fixed left-3.5 z-40 flex flex-col items-start gap-2 pointer-events-none max-w-[calc(100vw-72px)]"
+        style={{ top: 'calc(14px + env(safe-area-inset-top, 0px))' }}
       >
         {isManualTuningOpen && (
           <ManualTuningBar
