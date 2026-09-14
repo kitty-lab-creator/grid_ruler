@@ -1,5 +1,5 @@
 // Service Worker for 方格紙量尺
-const CACHE_NAME = 'ruler-grid-v2.4.0';
+const CACHE_NAME = 'ruler-grid-v2.4.1';
 const ASSETS = [
   './',
   './index.html',

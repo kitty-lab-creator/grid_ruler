@@ -34,17 +34,24 @@
     html, body {
       width: 100%;
       height: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
       touch-action: none;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background-color: #ffffff;
     }
     #ruler-canvas {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       display: block;
       cursor: crosshair;
     }
@@ -517,7 +524,7 @@
      */
     const CONFIG = {
       appName: "方格紙量尺",
-      version: "v2.4.0 離線通用版",
+      version: "v2.4.1 離線通用版",
       description: "專為隨身物件測量設計。具備 3 段式專業參考標線、長寬等比鎖定與實體卡片校準，全離線運作。",
       author: "Kitty Ng",
       contactEmail: "kitty.waiying@gmail.com",
@@ -585,9 +592,10 @@
     let isGuideRatioLocked = false;
     let lockedGuideRatio = null;
 
-    // Origin coordinate constants
-    const originX = 36;
-    function getOriginY(h) { return h - 36; }
+    // Origin coordinate constants - flush with bottom/left screen edges without extra blank padding
+    let currentCanvasHeight = 0;
+    const originX = 32;
+    function getOriginY(h) { return h - 26; }
 
     const canvas = document.getElementById('ruler-canvas');
     const ctx = canvas.getContext('2d');
@@ -674,6 +682,7 @@
       const rect = canvas.getBoundingClientRect();
       const width = Math.round(rect.width || window.innerWidth);
       const height = Math.round(rect.height || window.innerHeight);
+      currentCanvasHeight = height;
       const dpr = window.devicePixelRatio || 1;
 
       const targetW = Math.round(width * dpr);
@@ -740,7 +749,7 @@
 
       // 5. Ticks and Numbers
       ctx.fillStyle = theme.text;
-      ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
       // X Axis Ticks
       ctx.textAlign = 'center';
@@ -750,11 +759,11 @@
         ctx.lineWidth = 1.8;
         ctx.beginPath();
         ctx.moveTo(x, originY);
-        ctx.lineTo(x, originY + 7);
+        ctx.lineTo(x, originY + 6);
         ctx.stroke();
 
         if (countX > 0) {
-          ctx.fillText(String(countX), x, originY + 21);
+          ctx.fillText(String(countX), x, originY + 18);
         }
 
         const halfX = x + pixelsPerUnit / 2;
@@ -762,7 +771,7 @@
           ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.moveTo(halfX, originY);
-          ctx.lineTo(halfX, originY + 4.5);
+          ctx.lineTo(halfX, originY + 4);
           ctx.stroke();
         }
 
@@ -771,10 +780,10 @@
           const q3 = x + pixelsPerUnit * 0.75;
           ctx.lineWidth = 0.8;
           if (q1 < width) {
-            ctx.beginPath(); ctx.moveTo(q1, originY); ctx.lineTo(q1, originY + 3); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(q1, originY); ctx.lineTo(q1, originY + 2.5); ctx.stroke();
           }
           if (q3 < width) {
-            ctx.beginPath(); ctx.moveTo(q3, originY); ctx.lineTo(q3, originY + 3); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(q3, originY); ctx.lineTo(q3, originY + 2.5); ctx.stroke();
           }
         }
         countX++;
@@ -788,11 +797,11 @@
         ctx.lineWidth = 1.8;
         ctx.beginPath();
         ctx.moveTo(originX, y);
-        ctx.lineTo(originX - 7, y);
+        ctx.lineTo(originX - 6, y);
         ctx.stroke();
 
         if (countY > 0) {
-          ctx.fillText(String(countY), originX - 10, y + 4.5);
+          ctx.fillText(String(countY), originX - 8, y + 4.5);
         }
 
         const halfY = y - pixelsPerUnit / 2;
@@ -800,7 +809,7 @@
           ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.moveTo(originX, halfY);
-          ctx.lineTo(originX - 4.5, halfY);
+          ctx.lineTo(originX - 4, halfY);
           ctx.stroke();
         }
 
@@ -809,10 +818,10 @@
           const q3 = y - pixelsPerUnit * 0.75;
           ctx.lineWidth = 0.8;
           if (q1 > 0) {
-            ctx.beginPath(); ctx.moveTo(originX, q1); ctx.lineTo(originX - 3, q1); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, q1); ctx.lineTo(originX - 2.5, q1); ctx.stroke();
           }
           if (q3 > 0) {
-            ctx.beginPath(); ctx.moveTo(originX, q3); ctx.lineTo(originX - 3, q3); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, q3); ctx.lineTo(originX - 2.5, q3); ctx.stroke();
           }
         }
         countY++;
@@ -820,9 +829,9 @@
 
       // Origin corner unit label
       ctx.textAlign = 'center';
-      ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       ctx.fillStyle = theme.text;
-      ctx.fillText(unit.toUpperCase(), originX / 2, originY + 21);
+      ctx.fillText(unit.toUpperCase(), originX / 2, originY + 18);
 
       // 6. Solid Red Reference Line & Live Coordinates Badge
       if (showGuides) {
@@ -922,7 +931,7 @@
     function handleStart(e) {
       if (!showGuides || isGuidePositionLocked) return;
       const pos = getPointerPos(e);
-      const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
+      const originY = getOriginY(currentCanvasHeight || Math.round(canvas.clientHeight || window.innerHeight));
       const curX = originX + guideX;
       const curY = originY - guideY;
 
@@ -951,7 +960,7 @@
       if (!dragMode || !showGuides || isGuidePositionLocked) return;
       if (e.cancelable) e.preventDefault();
       const pos = getPointerPos(e);
-      const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
+      const originY = getOriginY(currentCanvasHeight || Math.round(canvas.clientHeight || window.innerHeight));
 
       if (isGuideRatioLocked && lockedGuideRatio && lockedGuideRatio > 0.0001) {
         if (dragMode === 'x' || dragMode === 'both') {
