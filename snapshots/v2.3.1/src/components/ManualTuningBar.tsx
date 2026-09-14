@@ -46,7 +46,8 @@ export const ManualTuningBar: React.FC<ManualTuningBarProps> = ({
   return (
     <div
       id="manual-tuning-bar"
-      className="bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-lg px-3 py-1.5 flex items-center gap-2 text-slate-800 pointer-events-auto select-none max-w-full overflow-x-auto"
+      className="fixed left-3.5 z-40 max-w-[calc(100vw-70px)] sm:max-w-md bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-lg px-3 py-1.5 flex items-center gap-2 text-slate-800 pointer-events-auto select-none"
+      style={{ top: 'calc(14px + env(safe-area-inset-top, 0px))' }}
     >
       <div className="flex items-center gap-1">
         <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">

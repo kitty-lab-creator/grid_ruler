@@ -3,7 +3,6 @@ import { Unit, BG_COLOR_OPTIONS } from './types';
 import { RulerCanvas } from './components/RulerCanvas';
 import { RightToolbar } from './components/RightToolbar';
 import { ManualTuningBar } from './components/ManualTuningBar';
-import { ReferenceLineBar } from './components/ReferenceLineBar';
 import { CardCalibrationModal } from './components/CardCalibrationModal';
 import { InfoModal } from './components/InfoModal';
 import { DonateModal } from './components/DonateModal';
@@ -43,9 +42,6 @@ export default function App() {
   const [showGuides, setShowGuides] = useState<boolean>(false);
   const [guideX, setGuideX] = useState<number>(140);
   const [guideY, setGuideY] = useState<number>(140);
-  const [isPositionLocked, setIsPositionLocked] = useState<boolean>(false);
-  const [isRatioLocked, setIsRatioLocked] = useState<boolean>(false);
-  const [lockedRatio, setLockedRatio] = useState<number | null>(null);
 
   // Modals & Panels
   const [isManualTuningOpen, setIsManualTuningOpen] = useState<boolean>(false);
@@ -78,26 +74,6 @@ export default function App() {
 
   const handleToggleGuides = useCallback(() => {
     setShowGuides((prev) => !prev);
-  }, []);
-
-  const handleToggleRatioLock = useCallback(() => {
-    setIsRatioLocked((prev) => {
-      const next = !prev;
-      if (next) {
-        const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
-        const valX = guideX / pixelsPerUnit;
-        const valY = guideY / pixelsPerUnit;
-        const ratio = valY > 0.0001 ? valX / valY : 1.0;
-        setLockedRatio(ratio);
-      } else {
-        setLockedRatio(null);
-      }
-      return next;
-    });
-  }, [unit, ppi, guideX, guideY]);
-
-  const handleTogglePositionLock = useCallback(() => {
-    setIsPositionLocked((prev) => !prev);
   }, []);
 
   const handleToggleManualTuning = useCallback(() => {
@@ -134,43 +110,17 @@ export default function App() {
           setGuideX(x);
           setGuideY(y);
         }}
-        isPositionLocked={isPositionLocked}
-        isRatioLocked={isRatioLocked}
-        lockedRatio={lockedRatio}
       />
 
-      {/* Top Left Floating Bars Container: PPI Manual Tuning & Reference Line Control */}
-      <div
-        className="fixed left-3.5 z-40 flex flex-col items-start gap-2 pointer-events-none max-w-[calc(100vw-72px)]"
-        style={{ top: 'calc(14px + env(safe-area-inset-top, 0px))' }}
-      >
-        {isManualTuningOpen && (
-          <ManualTuningBar
-            ppi={ppi}
-            onPpiChange={handlePpiChange}
-            onClose={() => setIsManualTuningOpen(false)}
-            defaultPpi={defaultPpi}
-          />
-        )}
-
-        {showGuides && (
-          <ReferenceLineBar
-            unit={unit}
-            ppi={ppi}
-            guideX={guideX}
-            guideY={guideY}
-            onGuideChange={(x, y) => {
-              setGuideX(x);
-              setGuideY(y);
-            }}
-            isPositionLocked={isPositionLocked}
-            onTogglePositionLock={handleTogglePositionLock}
-            isRatioLocked={isRatioLocked}
-            onToggleRatioLock={handleToggleRatioLock}
-            lockedRatio={lockedRatio}
-          />
-        )}
-      </div>
+      {/* Manual Tuning Bar (Top) */}
+      {isManualTuningOpen && (
+        <ManualTuningBar
+          ppi={ppi}
+          onPpiChange={handlePpiChange}
+          onClose={() => setIsManualTuningOpen(false)}
+          defaultPpi={defaultPpi}
+        />
+      )}
 
       {/* Right Toolbar: Vertical circle button column (1-6) and collapse toggle (7) */}
       <RightToolbar

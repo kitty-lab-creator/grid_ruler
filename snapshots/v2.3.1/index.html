@@ -224,55 +224,19 @@
     </button>
   </div>
 
-  <!-- Top Left Floating Bars Container: PPI Manual Tuning & Reference Line Control -->
-  <div id="top-bars-container" style="position: fixed; left: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 40; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; pointer-events: none; max-width: calc(100vw - 78px);">
-
-    <!-- 1. Manual Tuning Top Bar -->
-    <div id="tuning-bar" style="display: none; pointer-events: auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); align-items: center; gap: 8px; color: #1e293b; max-width: 100%; overflow-x: auto;">
-      <span style="font-size: 12px; font-weight: 700; color: #334155;">比例</span>
-      <button id="btn-ppi-minus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-      <input type="number" id="ppi-input" step="0.1" min="30" max="800" style="width: 72px; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 2px; color: #0f172a; outline: none;">
-      <span style="font-size: 11px; font-weight: 600; color: #64748b;">PPI</span>
-      <button id="btn-ppi-plus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000000;">+</button>
-      <button id="btn-ppi-reset" title="重設預設值" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-          <polyline points="3 3 3 8 8 8"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- 2. Reference Line Control Box (Outlook from attachment: X: [ ] cm/in [-] Y: [ ] cm/in [lock]) -->
-    <div id="guide-control-bar" style="display: none; pointer-events: auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 11px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); align-items: center; gap: 6px; color: #1e293b; max-width: 100%; overflow-x: auto;">
-      <!-- X coordinate input -->
-      <span style="font-size: 12px; font-weight: 700; color: #0f172a; font-family: monospace;">X:</span>
-      <input type="number" id="guide-x-input" inputmode="decimal" step="0.01" min="0" style="width: 54px; text-align: center; font-weight: 700; font-family: monospace; font-size: 13px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 2px; color: #0f172a; outline: none;" title="手動輸入 X 軸長度" aria-label="X 軸長度">
-      <span id="guide-x-unit" style="font-size: 11px; font-weight: 600; color: #64748b;">cm</span>
-
-      <!-- Ratio / Chain link button between X and Y -->
-      <button type="button" id="btn-guide-ratio" title="鎖定 X/Y 長寬比例" aria-label="長寬比例開關" style="width: 28px; height: 28px; border-radius: 8px; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; color: #64748b; transition: all 0.15s ease;">
-        <svg id="guide-ratio-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <!-- Default unlinked chain [-/-] matching user's drawing -->
-          <path d="m18.84 12.25 1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-          <path d="m5.16 11.75-1.72 1.71a5 5 0 0 0 7.07 7.07l1.72-1.71"/>
-          <line x1="2" y1="2" x2="22" y2="22" stroke-width="2.5"/>
-        </svg>
-      </button>
-
-      <!-- Y coordinate input -->
-      <span style="font-size: 12px; font-weight: 700; color: #0f172a; font-family: monospace;">Y:</span>
-      <input type="number" id="guide-y-input" inputmode="decimal" step="0.01" min="0" style="width: 54px; text-align: center; font-weight: 700; font-family: monospace; font-size: 13px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 2px; color: #0f172a; outline: none;" title="手動輸入 Y 軸長度" aria-label="Y 軸長度">
-      <span id="guide-y-unit" style="font-size: 11px; font-weight: 600; color: #64748b;">cm</span>
-
-      <!-- Position Lock button beside Y box -->
-      <button type="button" id="btn-guide-lock" title="鎖定參考線位置" aria-label="鎖定位置開關" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; color: #64748b; transition: all 0.15s ease;">
-        <svg id="guide-lock-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <!-- Default unlocked padlock [🔓] -->
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-        </svg>
-      </button>
-    </div>
+  <!-- Manual Tuning Top Bar -->
+  <div id="tuning-bar" style="display: none; position: fixed; left: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); z-index: 40; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-radius: 16px; padding: 6px 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); align-items: center; gap: 8px; color: #1e293b;">
+    <span style="font-size: 12px; font-weight: 700; color: #334155;">比例</span>
+    <button id="btn-ppi-minus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
+    <input type="number" id="ppi-input" step="0.1" min="30" max="800" style="width: 72px; text-align: center; font-weight: bold; font-family: monospace; font-size: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 2px; color: #0f172a; outline: none;">
+    <span style="font-size: 11px; font-weight: 600; color: #64748b;">PPI</span>
+    <button id="btn-ppi-plus" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000000;">+</button>
+    <button id="btn-ppi-reset" title="重設預設值" style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <polyline points="3 3 3 8 8 8"/>
+      </svg>
+    </button>
   </div>
 
   <!-- Card Calibration Modal -->
@@ -517,9 +481,6 @@
     let guideY = 140;
     let isDragging = false;
     let isCollapsed = false;
-    let isGuidePositionLocked = false;
-    let isGuideRatioLocked = false;
-    let lockedGuideRatio = null;
 
     // Origin coordinate constants
     const originX = 36;
@@ -583,25 +544,6 @@
       const previewCard = document.getElementById('preview-card');
       if (previewCard) {
         previewCard.style.height = heightPx + 'px';
-      }
-    }
-
-    function updateGuideInputs() {
-      const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
-      const valX = (guideX / pixelsPerUnit).toFixed(2);
-      const valY = (guideY / pixelsPerUnit).toFixed(2);
-      const unitLabel = unit === 'cm' ? 'cm' : 'in';
-      const guideXUnit = document.getElementById('guide-x-unit');
-      const guideYUnit = document.getElementById('guide-y-unit');
-      const guideXInput = document.getElementById('guide-x-input');
-      const guideYInput = document.getElementById('guide-y-input');
-      if (guideXUnit) guideXUnit.textContent = unitLabel;
-      if (guideYUnit) guideYUnit.textContent = unitLabel;
-      if (guideXInput && document.activeElement !== guideXInput) {
-        guideXInput.value = valX;
-      }
-      if (guideYInput && document.activeElement !== guideYInput) {
-        guideYInput.value = valY;
       }
     }
 
@@ -802,8 +744,7 @@
         // Measurement badge
         const valX = (guideX / pixelsPerUnit).toFixed(2);
         const valY = (guideY / pixelsPerUnit).toFixed(2);
-        const lockSuffix = isGuidePositionLocked ? ' 🔒' : isGuideRatioLocked ? ' 🔗' : '';
-        const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}${lockSuffix}`;
+        const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}`;
 
         ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         const textMetrics = ctx.measureText(labelText);
@@ -856,7 +797,7 @@
     let dragMode = null; // 'both' | 'x' | 'y'
 
     function handleStart(e) {
-      if (!showGuides || isGuidePositionLocked) return;
+      if (!showGuides) return;
       const pos = getPointerPos(e);
       const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
       const curX = originX + guideX;
@@ -873,39 +814,25 @@
         dragMode = 'y';
       } else {
         guideX = Math.max(0, pos.x - originX);
-        guideY = (isGuideRatioLocked && lockedGuideRatio && lockedGuideRatio > 0.0001)
-          ? (guideX / lockedGuideRatio)
-          : Math.max(0, originY - pos.y);
+        guideY = Math.max(0, originY - pos.y);
         dragMode = 'both';
       }
       isDragging = true;
-      updateGuideInputs();
       render();
     }
 
     function handleMove(e) {
-      if (!dragMode || !showGuides || isGuidePositionLocked) return;
+      if (!dragMode || !showGuides) return;
       if (e.cancelable) e.preventDefault();
       const pos = getPointerPos(e);
       const originY = getOriginY(Math.round(canvas.clientHeight || window.innerHeight));
 
-      if (isGuideRatioLocked && lockedGuideRatio && lockedGuideRatio > 0.0001) {
-        if (dragMode === 'x' || dragMode === 'both') {
-          guideX = Math.max(0, pos.x - originX);
-          guideY = guideX / lockedGuideRatio;
-        } else if (dragMode === 'y') {
-          guideY = Math.max(0, originY - pos.y);
-          guideX = guideY * lockedGuideRatio;
-        }
-      } else {
-        if (dragMode === 'x' || dragMode === 'both') {
-          guideX = Math.max(0, pos.x - originX);
-        }
-        if (dragMode === 'y' || dragMode === 'both') {
-          guideY = Math.max(0, originY - pos.y);
-        }
+      if (dragMode === 'x' || dragMode === 'both') {
+        guideX = Math.max(0, pos.x - originX);
       }
-      updateGuideInputs();
+      if (dragMode === 'y' || dragMode === 'both') {
+        guideY = Math.max(0, originY - pos.y);
+      }
       render();
     }
 
@@ -943,145 +870,20 @@
       unit = unit === 'cm' ? 'in' : 'cm';
       unitText.innerText = unit === 'cm' ? 'in/cm' : 'cm/in';
       saveSettings();
-      updateGuideInputs();
       render();
     });
 
     // 2. Reference Line Toggle
     const btnGuide = document.getElementById('btn-guide');
-    const guideControlBar = document.getElementById('guide-control-bar');
     btnGuide.addEventListener('click', () => {
       showGuides = !showGuides;
       if (showGuides) {
         btnGuide.classList.add('active-red');
-        if (guideControlBar) guideControlBar.style.display = 'flex';
-        updateGuideInputs();
       } else {
         btnGuide.classList.remove('active-red');
-        if (guideControlBar) guideControlBar.style.display = 'none';
       }
       render();
     });
-
-    // Reference Line Control Bar Inputs & Actions
-    const guideXInput = document.getElementById('guide-x-input');
-    const guideYInput = document.getElementById('guide-y-input');
-    const btnGuideRatio = document.getElementById('btn-guide-ratio');
-    const btnGuideLock = document.getElementById('btn-guide-lock');
-    const guideRatioIcon = document.getElementById('guide-ratio-icon');
-    const guideLockIcon = document.getElementById('guide-lock-icon');
-
-    if (guideXInput) {
-      guideXInput.addEventListener('input', (e) => {
-        if (isGuidePositionLocked) return;
-        const val = parseFloat(e.target.value);
-        const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
-        if (!isNaN(val) && val >= 0) {
-          guideX = val * pixelsPerUnit;
-          if (isGuideRatioLocked && lockedGuideRatio && lockedGuideRatio > 0.0001) {
-            const nextValY = val / lockedGuideRatio;
-            guideY = nextValY * pixelsPerUnit;
-            if (guideYInput) guideYInput.value = nextValY.toFixed(2);
-          }
-          render();
-        }
-      });
-      guideXInput.addEventListener('blur', updateGuideInputs);
-    }
-
-    if (guideYInput) {
-      guideYInput.addEventListener('input', (e) => {
-        if (isGuidePositionLocked) return;
-        const val = parseFloat(e.target.value);
-        const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
-        if (!isNaN(val) && val >= 0) {
-          guideY = val * pixelsPerUnit;
-          if (isGuideRatioLocked && lockedGuideRatio && lockedGuideRatio > 0.0001) {
-            const nextValX = val * lockedGuideRatio;
-            guideX = nextValX * pixelsPerUnit;
-            if (guideXInput) guideXInput.value = nextValX.toFixed(2);
-          }
-          render();
-        }
-      });
-      guideYInput.addEventListener('blur', updateGuideInputs);
-    }
-
-    if (btnGuideRatio) {
-      btnGuideRatio.addEventListener('click', () => {
-        if (isGuidePositionLocked) return;
-        isGuideRatioLocked = !isGuideRatioLocked;
-        const pixelsPerUnit = unit === 'cm' ? ppi / 2.54 : ppi;
-        if (isGuideRatioLocked) {
-          const valX = guideX / pixelsPerUnit;
-          const valY = guideY / pixelsPerUnit;
-          lockedGuideRatio = valY > 0.0001 ? valX / valY : 1.0;
-          btnGuideRatio.style.background = '#fee2e2';
-          btnGuideRatio.style.borderColor = '#f87171';
-          btnGuideRatio.style.color = '#dc2626';
-          btnGuideRatio.title = '長寬比例已鎖定 (點擊解鎖)';
-          if (guideRatioIcon) {
-            guideRatioIcon.innerHTML = '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>';
-          }
-        } else {
-          lockedGuideRatio = null;
-          btnGuideRatio.style.background = '#f1f5f9';
-          btnGuideRatio.style.borderColor = '#cbd5e1';
-          btnGuideRatio.style.color = '#64748b';
-          btnGuideRatio.title = '鎖定 X/Y 長寬比例';
-          if (guideRatioIcon) {
-            guideRatioIcon.innerHTML = '<path d="m18.84 12.25 1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="m5.16 11.75-1.72 1.71a5 5 0 0 0 7.07 7.07l1.72-1.71"/><line x1="2" y1="2" x2="22" y2="22" stroke-width="2.5"/>';
-          }
-        }
-        render();
-      });
-    }
-
-    if (btnGuideLock) {
-      btnGuideLock.addEventListener('click', () => {
-        isGuidePositionLocked = !isGuidePositionLocked;
-        if (isGuidePositionLocked) {
-          btnGuideLock.style.background = '#ef4444';
-          btnGuideLock.style.borderColor = '#dc2626';
-          btnGuideLock.style.color = '#ffffff';
-          btnGuideLock.title = '參考線位置已鎖定 (點擊解鎖)';
-          if (guideLockIcon) {
-            guideLockIcon.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
-          }
-          if (guideXInput) {
-            guideXInput.disabled = true;
-            guideXInput.style.opacity = '0.6';
-            guideXInput.style.cursor = 'not-allowed';
-          }
-          if (guideYInput) {
-            guideYInput.disabled = true;
-            guideYInput.style.opacity = '0.6';
-            guideYInput.style.cursor = 'not-allowed';
-          }
-          canvas.style.cursor = 'default';
-        } else {
-          btnGuideLock.style.background = '#f1f5f9';
-          btnGuideLock.style.borderColor = '#cbd5e1';
-          btnGuideLock.style.color = '#64748b';
-          btnGuideLock.title = '鎖定參考線位置';
-          if (guideLockIcon) {
-            guideLockIcon.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>';
-          }
-          if (guideXInput) {
-            guideXInput.disabled = false;
-            guideXInput.style.opacity = '1';
-            guideXInput.style.cursor = 'text';
-          }
-          if (guideYInput) {
-            guideYInput.disabled = false;
-            guideYInput.style.opacity = '1';
-            guideYInput.style.cursor = 'text';
-          }
-          canvas.style.cursor = 'crosshair';
-        }
-        render();
-      });
-    }
 
     // 3. Color Theme Cycle
     const btnColor = document.getElementById('btn-color');

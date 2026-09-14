@@ -9,9 +9,6 @@ interface RulerCanvasProps {
   guideX: number; // distance in px from originX
   guideY: number; // distance in px from originY
   onGuideChange: (newX: number, newY: number) => void;
-  isPositionLocked?: boolean;
-  isRatioLocked?: boolean;
-  lockedRatio?: number | null;
 }
 
 export const RulerCanvas: React.FC<RulerCanvasProps> = ({
@@ -22,9 +19,6 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   guideX,
   guideY,
   onGuideChange,
-  isPositionLocked = false,
-  isRatioLocked = false,
-  lockedRatio = null,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const draggingRef = useRef<'x' | 'y' | 'both' | null>(null);
@@ -260,8 +254,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       // Live measurement values
       const valX = (guideX / pixelsPerUnit).toFixed(2);
       const valY = (guideY / pixelsPerUnit).toFixed(2);
-      const lockSuffix = isPositionLocked ? ' 🔒' : isRatioLocked ? ' 🔗' : '';
-      const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}${lockSuffix}`;
+      const labelText = `X: ${valX} ${unit}  Y: ${valY} ${unit}`;
 
       ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       const textMetrics = ctx.measureText(labelText);
@@ -303,7 +296,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     }
 
     ctx.restore();
-  }, [ppi, unit, colorScheme, showGuides, guideX, guideY, isDragging, isPositionLocked, isRatioLocked]);
+  }, [ppi, unit, colorScheme, showGuides, guideX, guideY, isDragging]);
 
   useEffect(() => {
     draw();
@@ -331,7 +324,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   };
 
   const handlePointerDown = (e: React.TouchEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
-    if (!showGuides || isPositionLocked) return;
+    if (!showGuides) return;
     const pos = getCanvasPos(e);
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -357,9 +350,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     } else {
       // Direct touch on grid: immediately jump crosshair to touch position
       const newX = Math.max(0, pos.x - originX);
-      const newY = isRatioLocked && lockedRatio && lockedRatio > 0.0001
-        ? newX / lockedRatio
-        : Math.max(0, originY - pos.y);
+      const newY = Math.max(0, originY - pos.y);
       onGuideChange(newX, newY);
       draggingRef.current = 'both';
       setIsDragging(true);
@@ -368,7 +359,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
   const handlePointerMove = useCallback(
     (e: TouchEvent | MouseEvent) => {
-      if (!draggingRef.current || !showGuides || isPositionLocked) return;
+      if (!draggingRef.current || !showGuides) return;
       if (e.cancelable) {
         e.preventDefault();
       }
@@ -382,26 +373,16 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       let newX = guideX;
       let newY = guideY;
 
-      if (isRatioLocked && lockedRatio && lockedRatio > 0.0001) {
-        if (draggingRef.current === 'both' || draggingRef.current === 'x') {
-          newX = Math.max(0, pos.x - originX);
-          newY = newX / lockedRatio;
-        } else if (draggingRef.current === 'y') {
-          newY = Math.max(0, originY - pos.y);
-          newX = newY * lockedRatio;
-        }
-      } else {
-        if (draggingRef.current === 'x' || draggingRef.current === 'both') {
-          newX = Math.max(0, pos.x - originX);
-        }
-        if (draggingRef.current === 'y' || draggingRef.current === 'both') {
-          newY = Math.max(0, originY - pos.y);
-        }
+      if (draggingRef.current === 'x' || draggingRef.current === 'both') {
+        newX = Math.max(0, pos.x - originX);
+      }
+      if (draggingRef.current === 'y' || draggingRef.current === 'both') {
+        newY = Math.max(0, originY - pos.y);
       }
 
       onGuideChange(newX, newY);
     },
-    [guideX, guideY, onGuideChange, showGuides, isPositionLocked, isRatioLocked, lockedRatio]
+    [guideX, guideY, onGuideChange, showGuides]
   );
 
   const handlePointerUp = useCallback(() => {
@@ -432,9 +413,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     <canvas
       ref={canvasRef}
       id="ruler-canvas"
-      className={`absolute inset-0 block w-full h-full touch-none select-none ${
-        isPositionLocked ? 'cursor-default' : 'cursor-crosshair'
-      }`}
+      className="absolute inset-0 block w-full h-full touch-none select-none cursor-crosshair"
       onTouchStart={handlePointerDown}
       onMouseDown={handlePointerDown}
     />

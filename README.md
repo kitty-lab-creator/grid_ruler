@@ -83,7 +83,7 @@
 ## 👤 作者與支援（Author & Support）
 
 - **作者**：Kitty Ng
-- **版本**：v2.3 離線通用版 (Stable)
+- **版本**：v2.3.1 離線通用版 (Stable)
 - **問題回報 / 建議**：[kitty.waiying@gmail.com](mailto:kitty.waiying@gmail.com?subject=方格紙量尺問題與回報)
 
 ---
