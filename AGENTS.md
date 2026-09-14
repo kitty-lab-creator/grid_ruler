@@ -1,9 +1,10 @@
 # Project Guidelines & Rules
 
 ## Donation & Payment QR Codes
-- **Static Assets Requirement**: The donation modal must strictly use the static JPG files located at:
-  - PayPal: `assets/donate/paypal.jpg` (or `public/assets/donate/paypal.jpg`)
-  - PayMe: `assets/donate/payme.jpg` (or `public/assets/donate/payme.jpg`)
-  - AlipayHK: `assets/donate/alipayhk.jpg` (or `public/assets/donate/alipayhk.jpg`)
-  - WeChat Pay: `assets/donate/wechatpay.jpg` (or `public/assets/donate/wechatpay.jpg`)
-- **Strict Prohibition**: **DO NOT** replace these images with dynamic QR generation libraries, canvas drawings, or synthetic overlays in any future edits. Always preserve direct `<img>` rendering with `object-fit: contain` to protect QR code scanning integrity.
+- **PayPal Only**: Per user request, PayPal is the sole donation/support method. PayMe, AlipayHK, and WeChat Pay options have been removed.
+- **Exact Target URL**: The PayPal QR code and direct link must strictly point to:
+  `https://www.paypal.com/qrcodes/managed/16d4009f-428d-4b45-bcf6-bb7af15d9449?utm_source=consweb_more`
+  Do not alter this URL.
+- **Static Assets Requirement**: The donation modal uses the static JPG/PNG file located at:
+  - `assets/donate/paypal.jpg` (and `public/assets/donate/paypal.jpg`)
+- Direct link is provided alongside the QR image so mobile users can tap directly without scanning.
