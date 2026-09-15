@@ -30,9 +30,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
   const draggingRef = useRef<'x' | 'y' | 'both' | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Origin offset constants - flush with bottom/left screen edges without extra blank padding
-  const originX = 32;
-  const getOriginY = (height: number) => height - 26;
+  // Origin offset constants
+  const originX = 36;
+  const getOriginY = (height: number) => height - 36;
 
   // Measure and render
   const draw = useCallback(() => {
@@ -113,7 +113,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
     // 4. Tick Marks and Numbering
     ctx.fillStyle = colorScheme.textColor;
-    ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
     // --- Horizontal (X) Axis Ticks & Labels ---
     ctx.textAlign = 'center';
@@ -124,12 +124,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(x, originY);
-      ctx.lineTo(x, originY + 6);
+      ctx.lineTo(x, originY + 7);
       ctx.stroke();
 
       // Number label below tick
       if (countX > 0) {
-        ctx.fillText(String(countX), x, originY + 18);
+        ctx.fillText(String(countX), x, originY + 21);
       }
 
       // Halfway tick (0.5 unit)
@@ -138,7 +138,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(halfX, originY);
-        ctx.lineTo(halfX, originY + 4);
+        ctx.lineTo(halfX, originY + 4.5);
         ctx.stroke();
       }
 
@@ -150,13 +150,13 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         if (q1 < width) {
           ctx.beginPath();
           ctx.moveTo(q1, originY);
-          ctx.lineTo(q1, originY + 2.5);
+          ctx.lineTo(q1, originY + 3);
           ctx.stroke();
         }
         if (q3 < width) {
           ctx.beginPath();
           ctx.moveTo(q3, originY);
-          ctx.lineTo(q3, originY + 2.5);
+          ctx.lineTo(q3, originY + 3);
           ctx.stroke();
         }
       }
@@ -173,12 +173,12 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
       ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.moveTo(originX, y);
-      ctx.lineTo(originX - 6, y);
+      ctx.lineTo(originX - 7, y);
       ctx.stroke();
 
       // Number label to the left of tick
       if (countY > 0) {
-        ctx.fillText(String(countY), originX - 8, y + 4.5);
+        ctx.fillText(String(countY), originX - 10, y + 4.5);
       }
 
       // Halfway tick
@@ -187,7 +187,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(originX, halfY);
-        ctx.lineTo(originX - 4, halfY);
+        ctx.lineTo(originX - 4.5, halfY);
         ctx.stroke();
       }
 
@@ -199,13 +199,13 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
         if (q1 > 0) {
           ctx.beginPath();
           ctx.moveTo(originX, q1);
-          ctx.lineTo(originX - 2.5, q1);
+          ctx.lineTo(originX - 3, q1);
           ctx.stroke();
         }
         if (q3 > 0) {
           ctx.beginPath();
           ctx.moveTo(originX, q3);
-          ctx.lineTo(originX - 2.5, q3);
+          ctx.lineTo(originX - 3, q3);
           ctx.stroke();
         }
       }
@@ -215,9 +215,9 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
 
     // Unit label in origin corner box
     ctx.textAlign = 'center';
-    ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillStyle = colorScheme.textColor;
-    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 18);
+    ctx.fillText(unit.toUpperCase(), originX / 2, originY + 21);
 
     // 5. Solid Red Reference Lines & Interactive Crosshairs
     if (showGuides) {
@@ -439,7 +439,7 @@ export const RulerCanvas: React.FC<RulerCanvasProps> = ({
     <canvas
       ref={canvasRef}
       id="ruler-canvas"
-      className={`fixed inset-0 block w-full h-full touch-none select-none ${
+      className={`absolute inset-0 block w-full h-full touch-none select-none ${
         isPositionLocked ? 'cursor-default' : 'cursor-crosshair'
       }`}
       onTouchStart={handlePointerDown}

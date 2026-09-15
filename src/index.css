@@ -18,6 +18,8 @@
     min-height: 100%;
     margin: 0;
     padding: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top, 0px);
     overflow-x: hidden;
     overflow-y: auto;
     touch-action: none;
